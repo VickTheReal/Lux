@@ -1,0 +1,590 @@
+//////////////////////////
+//BEGIN MANY BOOKS SCARE//
+//Skipped for now.
+void CollideBeginManyBook(string &in asParent, string &in asChild, int alState)
+{
+	PlaySoundAtEntity("SoundScratchx_1", "scare_scratch", "throwbook_13", 0.5f, false);
+	
+	PlayMusic("03_event_books.ogg", false, 0.7f, 0, 10, false);
+	
+	AddTimer("manybooks", 3, "TimerManyBooks");
+	
+	//DEBUG
+	AddDebugMessage("Begin Many Books Scare ", true);
+}
+void TimerManyBooks(string &in asTimer)
+{
+	AddLocalVarInt("VarMany", 1);	//What step to play in the event
+	float fSpeedMany = 0.5f;	//The default time between steps in an event
+	
+	switch(GetLocalVarInt("VarMany")) {
+		case 1:
+			CreateParticleSystemAtEntity("PSGhostBang", "ps_break_wood.ps", "throwbook_14", false);
+			PlaySoundAtEntity("SoundBang", "break_wood.snt", "throwbook_13", 0.0f, false);
+			PlaySoundAtEntity("SoundFearx2", "scare_male_terrified.snt", "Player", 0.5f, false);
+			fSpeedMany = 0.2f;
+		break;
+		case 2:
+			GiveSanityDamage(10, true);
+			for(int i=1;i<=5;i++) AddPropForce("throwbook_"+i, -100, 50, 0, "world");
+			fSpeedMany = 0.2f;
+		break;
+		case 3:
+			for(int i=6;i<=10;i++) AddPropForce("throwbook_"+i, -200, 120, -50, "world");
+			fSpeedMany = 0.1f;
+		break;
+		case 4:
+			for(int i=11;i<=15;i++) AddPropForce("throwbook_"+i, -300, 200, 50, "world");
+			FadeLightTo("BoxLight_4",1,0,0.2f,1,-1,0.1f);
+			fSpeedMany = 0.2f;
+		break;
+		case 5:
+			StartEffectFlash(0.05f, 0.15f, 0.05f);
+			PlaySoundAtEntity("SoundFlash1", "scare_thump_flash.snt", "Player", 0, false);
+			fSpeedMany = 0.8f;
+		break;
+		case 6:
+			FadeLightTo("BoxLight_4",0,0,0,0,-1,0.1f);
+			StopSound("SoundFearx2", 2);
+			StopSound("SoundScratchx_1", 2);
+			SetPropActiveAndFade("throwbook_*", false, 2);
+		break;
+	}
+
+	if(GetLocalVarInt("VarMany") < 6) AddTimer("manybooks", fSpeedMany, "TimerManyBooks");
+}
+//END MANY BOOKS SCARE//
+////////////////////////
+
+
+/////////////////////
+//BEGIN PIANO MUSIC//
+void CollideBeginPiano(string &in asParent, string &in asChild, int alState)
+{
+	if(asChild == "AreaSecondPiano"){
+		SetLeverStuckState("piano_2", 0, false);
+		AddBodyImpulse("piano_2_BodyLid", 0,100, 0, "world");
+		
+		PlaySoundAtEntity("SoundPiano2", "general_piano02.snt", "AreaPlayPiano", 0.0f, false);
+		PlaySoundAtEntity("SoundWind", "general_wind_whirl.snt", "AreaPlayPiano", 0.5f, false);
+		PlaySoundAtEntity("SoundWind", "scare_wall_scratch_single", "AreaPlayPiano", 0.5f, false);
+		
+		SetEntityActive("chair_nice01_12",	false);
+		SetEntityActive("chair_ghost", true);
+		
+		AddTimer("fallbook", 1.5f, "FallBook");
+		return;
+	}
+	
+	PlaySoundAtEntity("SoundPiano", "general_piano01.snt", "piano_1", 0.0f, false);
+	PlaySoundAtEntity("SoundWind", "general_wind_whirl.snt", "tome01_8", 0.0f, false);
+	PlaySoundAtEntity("SoundWind", "03_wall_scratch.snt", "tome01_8", 0.5f, false);
+	
+	//SetLeverStuckState("piano_1", 0, false);
+	//AddBodyImpulse("piano_1_BodyLid", 0,100, 0, "world");
+		
+	AddTimer("fallbook", 1.5f, "FallBook");
+	
+	AddTimer("fallbook1", 2.2f, "FallBook");
+	
+	AddTimer("fallbook2", 2.5f, "FallBook");
+}
+void CollideCloseLid(string &in asParent, string &in asChild, int alState)
+{
+	SetLeverStuckState("piano_1", 0, false);
+	AddPropImpulse("piano_1", 0,0,10, "world");
+	
+	StopSound("SoundPiano", 1.0f);
+	
+	GiveSanityDamage(10, true);
+	
+	CreateParticleSystemAtEntity("PSdust", "ps_dust_piano.ps", "AreaPianoDust", false);
+	
+	AddTimer("liddust", 0.4f, "FallBook");
+}
+
+void FallBook(string &in asTimer)
+{
+	if(asTimer == "liddust"){
+		PlaySoundAtEntity("LidClose", "level_wood_min_max01.snt", "piano_1", 0.0f, false);
+		return;
+	}
+	else if(asTimer == "fallbook1"){
+		CreateParticleSystemAtEntity("PSdustbook", "ps_dust_impact.ps", "tome01_8", false);
+		StartScreenShake(0.005f, 0.5f, 0.5f, 0.5f);
+		return;
+	}
+	else if(asTimer == "fallbook2"){
+		GiveSanityDamage(10, true);
+		return;
+	}	
+	
+	StopSound("SoundWind", 2);
+	
+	AddPropForce("tome01_8", 0, 300, -700, "world");
+}
+//END PIANO MUSIC//
+///////////////////
+
+
+///////////////////////////
+//BEGIN SECRET SHELF DOOR//
+void InteractLibDoor(string &in asEntity)
+{
+	AddTimer("doormess", 0.5f, "TimerLockedDoorMess");
+}
+void TimerLockedDoorMess(string &in asTimer)
+{
+	SetMessage("Ch01Level03", "DoorLocked", 0);
+}
+
+void EntityCallBreakWall(string &in asEntity, string &in type)
+{
+	SetEntityActive("PassageInteractArea", false);
+	//SetEntityPlayerInteractCallback("mansionbase_secret_passage_1", "", true);
+	
+	GiveSanityBoostSmall();
+}
+
+void CollideSecretBook(string &in asParent, string &in asChild, int alState)
+{
+	if(alState == 1) {
+		SetLocalVarInt("Var"+asParent, 1);
+		
+		AddTimer(asParent, 20, "PushBackBook");
+		
+		SetPropObjectStuckState(asParent, 1);
+		
+		PlaySoundAtEntity("Sound"+asParent, "gameplay_tick", asParent, 0.0f, false);
+		
+		StartScreenShake(0.001f, 0.5f, 0.5f, 0.5f);
+		
+		PlayGuiSound("16_lever_stuck", 0.3f);
+		
+		/*DEBUG
+		 */
+		AddDebugMessage("Book in area: "+asParent, true);
+	} else {
+		SetLocalVarInt("Var"+asParent, 0);
+		
+		RemoveTimer(asParent);
+		
+		PlaySoundAtEntity("Sound2"+asParent, "lock_door", asParent, 1.5f, false);
+		PlayGuiSound("16_lever_stuck", 0.2f);
+		
+		StopSound("Sound"+asParent, 1.0f);
+		
+		/*DEBUG
+		 */
+		AddDebugMessage("Book out of area: "+asParent, true);
+	}
+	
+	/*All books are pulled before time is out and the secret room is revealed.
+	 */
+	if(GetLocalVarInt("VarSecretBook_1") == 1 && GetLocalVarInt("VarSecretBook_2") == 1 && GetLocalVarInt("VarSecretBook_3") == 1) {
+		
+		FadeLightTo("PointLight_30", 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 3.0f);
+		
+		SetMoveObjectState("shelf_secret_door_1", 1);
+		
+		SetPropObjectStuckState("SecretBook_*", -1);
+		
+		SetEntityInteractionDisabled("SecretBook_*", true);
+		
+		PlaySoundAtEntity("BooksDone", "lock_door", "Player", 0, false);
+		
+		CreateParticleSystemAtEntity("dust", "ps_dust_falling_door_quick", "AreaDoorParticle", false);
+		
+		for(int i=1;i<=3;i++){ RemoveTimer("SecretBook_"+i); StopSound("SoundSecretBook_"+i, 0.0f); }
+		
+		GiveSanityBoostSmall();
+		
+		SetEntityActive("AreaActivateLiveGrunt_1", true);
+		SetEntityActive("AreaActivateLiveGrunt_2", true);
+		
+		/*DEBUG
+		 */
+		AddDebugMessage("All books in position, move shelf!", true);
+	}
+
+}
+void PushBackBook(string &in asTimer)
+{
+	SetPropObjectStuckState(asTimer, -1);
+	
+	AddTimer("2"+asTimer, 0.25f, "PushBackBook02");
+	
+	/*DEBUG
+	 */
+	AddDebugMessage("Push back book: "+asTimer, true);
+}
+void PushBackBook02(string &in asTimer)
+{
+	if(asTimer == "2SecretBook_1") SetPropObjectStuckState("SecretBook_1", 0);
+	else if(asTimer == "2SecretBook_2") SetPropObjectStuckState("SecretBook_2", 0);
+	else SetPropObjectStuckState("SecretBook_3", 0);
+}
+
+void InteractMoveShelf(string &in asEntity)
+{
+	SetMessage("Ch01Level03", "MoveShelf", 0);
+}
+
+/*Find the key for the wine cellar
+ */
+void PickKey(string &in asEntity, string &in asType)
+{	
+	//GiveSanityBoostSmall();
+	
+	SetGlobalVarString(asEntity, asEntity);
+	
+	AddEntityCollideCallback("Player", "AreaActivateLastPiano", "CollideLastPiano", true, 1);
+}
+void PickLantern(string &in asEntity, string &in asType)
+{	
+	CompleteQuest("QLantern", "QLantern");
+}
+//END SECRET SHELF DOOR//
+/////////////////////////
+
+
+///////////////
+//BEGIN CLOUD//
+void CloudEffects(string &in asWhere, bool bLook)
+{
+	if(bLook) StartPlayerLookAt(asWhere, 0.75f, 0.75f, "");
+	
+	CreateParticleSystemAtEntity(asWhere, "ps_cloud_thing01.ps", asWhere, false);
+	FadeSepiaColorTo(0.5f, 0.025f);
+	FadeRadialBlurTo(0.1f, 0.025f);
+	SetRadialBlurStartDist(0.2f);
+	SetPlayerMoveSpeedMul(0.25f);
+	SetPlayerRunSpeedMul(0);
+	StartScreenShake(0.01f, 4, 2,2);
+	
+	AddTimer(asWhere, 0.05f, "TimerThing");
+	AddTimer("react1", 0.25f, "TimerThing");
+	AddTimer("thing1", 1.5f, "TimerThing");
+	AddTimer("thing2", 3.0f, "TimerThing");
+	AddTimer("thing3", 4.6f, "TimerThing");
+	AddTimer("thing4", 6.0f, "TimerThing");
+}
+void CollideCloudThing(string &in asParent, string &in asChild, int alState)
+{
+	if(asChild == "AreaCloudActivate_2")
+		CloudEffects("AreaCloudThing_2", true);
+	else if(asChild == "AreaCloudActivate_3")
+		CloudEffects("AreaDustScrape_3", false);
+	else if(asChild == "AreaCloudActivate_4")
+		CloudEffects("AreaDustScrape_8", false);
+	else if(asChild == "AreaCloudActivate_5")
+		CloudEffects("AreaCloudThing_5", true);
+		
+	/*DEBUG
+	 */
+	AddDebugMessage("Do cloud " + asChild, true);
+}
+void TimerThing(string &in asTimer)
+{	
+	PlaySoundAtEntity("clouds1", "03_cloud_swarm.snt", asTimer, 1, false);
+	SetPlayerMoveSpeedMul(0.9f);
+	SetPlayerRunSpeedMul(0.9f);
+		
+	if(asTimer == "thing1"){
+		SetPlayerMoveSpeedMul(0.7f);
+		SetPlayerRunSpeedMul(0.7f);
+	}
+	if(asTimer == "thing2"){
+		SetPlayerMoveSpeedMul(0.6f);
+		SetPlayerRunSpeedMul(0.6f);
+		StopSound("clouds1", 3.5f);
+	}
+	if(asTimer == "thing3"){
+		SetPlayerMoveSpeedMul(0.8f);
+		SetPlayerRunSpeedMul(0.8f);
+		FadeSepiaColorTo(0, 0.1f);
+		FadeRadialBlurTo(0, 0.1f);
+		StopPlayerLookAt();
+	}
+	if(asTimer == "thing4"){
+		SetPlayerMoveSpeedMul(1);
+		SetPlayerRunSpeedMul(1);
+	}
+	
+	if(asTimer == "react1"){
+		GiveSanityDamage(10, false);
+		SetPlayerMoveSpeedMul(0.8f);
+		SetPlayerRunSpeedMul(0.8f);
+	}
+}
+//END CLOUD//
+/////////////
+
+
+/////////////////////
+//MISC MINOR EVENTS//
+/*If player moves an urn from a table it will break and release a dust cloud
+ */
+void CollideJarLeaveArea(string &in asParent, string &in asChild, int alState)
+{
+	SetPropHealth(asParent, 0);
+	
+	PlaySoundAtEntity("ghost_released", "03_in_a_bottle", "Player", 0, false);
+	
+	GiveSanityDamage(10, true);
+}
+
+/*Play a last piano piece on the way out and activate a last cloud thing
+ */
+void CollideLastPiano(string &in asParent, string &in asChild, int alState)
+{
+	PlaySoundAtEntity("SoundPiano3", "general_piano03.snt", "piano_1", 0.0f, false);
+	
+	/*DEBUG
+	 */
+	AddDebugMessage("Play last piano", true);
+}
+
+/*Dripping blood at hole in the ceiling
+ */
+void TimerBloodDrop(string &in asTimer)
+{
+	if(asTimer == "bloodsound"){
+		PlaySoundAtEntity("bloddrop", "general_blood_drop", "AreaBloodDrop", 0, false);
+		AddTimer("blooddrop", 0.1f, "TimerBloodDrop");
+	}
+	else{ 
+		CreateParticleSystemAtEntity("PSblood", "ps_blood_drop.ps", "AreaBloodDrop_1", false);
+		AddTimer("bloodsound", 2.9f, "TimerBloodDrop");
+	}
+}
+
+/*Random ceiling particle and sound
+ */
+void TimerCrawl(string &in asTimer)
+{
+	int iCrawl = RandFloat(1, 8);	
+	float fCrawl = RandFloat(0.5f,6.5f);
+	
+	CreateParticleSystemAtEntity("crawlPS"+iCrawl, "ps_dust_falling_small.ps", "AreaDustScrape_"+iCrawl, false);
+	
+	PlaySoundAtEntity("crawlSound"+iCrawl, "03_wall_scratch_single.snt", "AreaDustScrape_"+iCrawl, 1.0f, false);
+	
+	AddTimer("crawl", 3.5f+fCrawl, "TimerCrawl");
+	
+	/*DEBUG
+	 */
+	AddDebugMessage("Now crawling in: "+iCrawl+" Next crawl in: "+(5.5f+fCrawl), true);
+}
+
+/////////////////
+/////////////////
+
+//////////////////////////////////////
+//START A GRUNT WALKING IN THE LEVEL//
+/*A grunt is shown going into another room when coming into the room, two different places but only 1 will be used
+ */
+void CollideActivateLiveGrunt(string &in asParent, string &in asChild, int alState)
+{
+	if(asChild == "AreaActivateLiveGrunt_1"){ 
+		SetEntityActive("servant_grunt_1", true);
+		SetEntityActive("AreaActivateLiveGrunt_2", false);
+	} else{
+		SetEntityActive("servant_grunt_2", true);
+		SetEntityActive("AreaActivateLiveGrunt_1", false);
+	}
+	
+	SetPlayerRunSpeedMul(0.9f);
+	SetPlayerMoveSpeedMul(0.9f);
+	
+	AddTimer("scare", 1.0f, "TimerGruntScare");
+	AddTimer("breath", 3.0f, "TimerGruntScare");
+}
+
+/*Give sanity damage on grunt activation
+ */
+void TimerGruntScare(string &in asTimer)
+{
+	if(asTimer == "breath"){
+		SetPlayerRunSpeedMul(1.0f);
+		SetPlayerMoveSpeedMul(1.0f);
+		return;
+	}
+	
+	GiveSanityDamage(10.0f, true);
+	SetPlayerRunSpeedMul(0.8f);
+	SetPlayerMoveSpeedMul(0.8f);
+}
+
+/*Remove the grunt as soon as it is in another room and out of sight
+ */
+void CollideDisableLiveGrunt(string &in asParent, string &in asChild, int alState)
+{
+	SetEntityActive(asParent, false);
+}
+
+/*If player goes to examine cavein from the other way around, a grunt appears behind him
+ */
+void CollideJumpGrunt(string &in asParent, string &in asChild, int alState)
+{
+	if(alState == 1) SetEntityActive("AreaLookGrunt", true);
+	else SetEntityActive("AreaLookGrunt", false);
+}
+
+/*To make sure that grunt is only activated when looking away
+ */
+void LookAtGrunt(string &in asEntity, int alState)
+{
+	SetEntityActive("servant_grunt_3", true);
+	AddTimer("scare", 0.5f, "TimerGruntScare");
+}
+//END A GRUNT WALKING IN THE LEVEL//
+////////////////////////////////////
+
+////////////////////////////
+//BEGIN BLOCKING SPIDER WEB//
+void CollideGiveQuestsWeb(string &in asParent, string &in asChild, int alState)
+{
+	SetEntityActive(asChild, false);
+}
+void UseAcidOnWeb(string &in asItem, string &in asEntity)
+{
+	SetPropHealth(asEntity, 0);
+	RemoveItem(asItem);
+	GiveItemFromFile("empty_container", "chemical_container.ent");
+	
+	CompleteQuest("QAcidSpider", "QAcidSpider");
+	
+	GiveSanityBoost();
+	
+	FadeLightTo("PointLightAcid", -1, -1, -1, -1, 3, 1.5f);
+	AddTimer("PointLightAcid", 4, "TimerFadeAcidLight");
+}
+void TimerFadeAcidLight(string &in asTimer)
+{
+	FadeLightTo(asTimer, 0, 0, 0, 0, -1, 3);
+}
+
+void UseEmptyContainerOnWeb(string &in asItem, string &in asEntity)
+{
+	SetMessage("Ch01Level02", "UseContainerOnSlime", 0);
+}
+
+void UseChemicalOnWeb(string &in asItem, string &in asEntity)
+{
+	SetMessage("Ch01Level02", "UseChemicalOnSlime", 0);
+}
+
+void InteractSlime(string &in asEntity)
+{
+	PlayGuiSound("slime_create3.ogg", 0.4f);
+	SetMessage("Ch01Level02", "InteractSlime", 0);
+	
+	AddTimer("backoncellar", 1.0f, "TimerCellarSlime");
+}
+void TimerCellarSlime(string &in asTimer)
+{
+	SetEntityPlayerInteractCallback("web_1", "InteractSlime", true);
+}
+
+//END BLOCKING SPIDER WEB//
+///////////////////////////
+
+////////////////////////////
+// Run first time starting map
+void OnStart()
+{
+	SetMapDisplayNameEntry("Archives");
+	
+	//----COLLIDE CALLBACKS----//
+	for(int i=1;i<=3;i++) AddEntityCollideCallback("SecretBook_"+i, "AreaSecretBook_"+i, "CollideSecretBook", false, 0);	//Pull books to reveal room
+	AddEntityCollideCallback("Player", "AreaTriggerManyBook", "CollideBeginManyBook", true, 1);	//Makes the shelf bang and books fly
+	AddEntityCollideCallback("Player", "AreaTriggerPiano", "CollideBeginPiano", true, 1);	//Some distant piano is playing and a book falls to the ground
+	AddEntityCollideCallback("Player", "AreaSecondPiano", "CollideBeginPiano", true, 1);
+	AddEntityCollideCallback("Player", "AreaClosePiano", "CollideCloseLid", true, 1);
+	AddEntityCollideCallback("vase02_ghost_1", "AreaJar", "CollideJarLeaveArea", true, -1);
+	
+	AddEntityCollideCallback("Player", "AreaCloudActivate_5", "CollideCaveIn", true, 1);
+	
+	AddEntityCollideCallback("Player", "AreaActivateLiveGrunt_1", "CollideActivateLiveGrunt", true, 1);
+	AddEntityCollideCallback("Player", "AreaActivateLiveGrunt_2", "CollideActivateLiveGrunt", true, 1);
+	
+	AddEntityCollideCallback("servant_grunt_1", "AreaActivateLiveGrunt_3", "CollideDisableLiveGrunt", true, 1);
+	AddEntityCollideCallback("servant_grunt_2", "AreaActivateLiveGrunt_3", "CollideDisableLiveGrunt", true, 1);
+	
+	AddEntityCollideCallback("Player", "AreaGiveQuestWeb", "CollideGiveQuestsWeb", false, 1);
+	
+	//----PLAYER INTERACTION----//
+	AddUseItemCallback("UseAcidOnWeb", "chemical_container_2", "web_1", "UseAcidOnWeb", true);
+	AddUseItemCallback("UseEmptyContainerOnWeb", "chemical_container_1", "web_1", "UseEmptyContainerOnWeb", false);
+	AddUseItemCallback("UseChemicalOnWeb", "Chemical_1", "web_1", "UseChemicalOnWeb", false);
+	AddUseItemCallback("UseChemicalOnWeb", "Chemical_2", "web_1", "UseChemicalOnWeb", false);
+	AddUseItemCallback("UseChemicalOnWeb", "Chemical_3", "web_1", "UseChemicalOnWeb", false);
+	AddUseItemCallback("UseChemicalOnWeb", "Chemical_4", "web_1", "UseChemicalOnWeb", false);
+	
+	//----PATROL FOR MONSTERS----//
+	AddEnemyPatrolNode("servant_grunt_1", "PathNodeArea_5", 0.0f, "");
+	AddEnemyPatrolNode("servant_grunt_2", "PathNodeArea_10", 0.0f, "");
+	
+	
+	for(int i=2;i<=5;i++)  AddEntityCollideCallback("Player", "AreaCloudActivate_"+i, "CollideCloudThing", true, 1);
+	//----INTRO----//
+	CloudEffects("AreaCloudThing_1", true);
+	
+	//----ENTITY INIT----//
+	SetPropHealth("display_3", 0);
+
+	//----QUEST INIT----//
+	SetNumberOfQuestsInMap(2);
+	
+	//----TIMER INIT----//
+	AddTimer("crawl", 0.5f, "TimerCrawl");
+	AddTimer("blooddrop", 1, "TimerBloodDrop");
+	
+	//----VARIABLES----//
+	SetLocalVarInt("VoiceResume", 0);
+	
+	//----DEBUG----//
+	if(ScriptDebugOn())
+	{
+		GiveItemFromFile("lantern", "lantern.ent");
+		for(int i=0;i<10;i++) GiveItemFromFile("tinderbox_"+i, "tinderbox.ent");
+		
+		//CollideCaveIn("", "", 1);	//to test cavein
+		
+		AddLocalVarInt("diary", 2);	//Activate flashback on first diary pickup
+		//AddTimer("TimerFlashBack", 0.1f, "TimerFlashBack");	//To use when tetsing with start loction _Flash
+		//SetPlayerLampOil(15);	//To test always give oil during flashback
+	}
+}
+
+////////////////////////////
+// Run when entering map
+void OnEnter()
+{	
+	//----PRELOADING----//
+	PreloadSound("scare_thump_flash"); PreloadSound("03_creak"); PreloadSound("react_breath"); PreloadSound("03_rock_amb"); 
+	PreloadSound("03_loop"); PreloadSound("03_orb_loop"); PreloadSound("03_orb_loop_loud"); PreloadSound("player_bodyfall"); 
+	PreloadSound("react_breath_slow"); PreloadSound("03_pound"); PreloadSound("react_pant"); PreloadSound("player_climb"); 
+	PreloadSound("03_drag_dirt"); PreloadSound("03_lift_rock"); PreloadSound("03_crew_talk"); PreloadSound("03_waking_up"); 
+	PreloadSound("03_rock_move"); PreloadSound("react_sigh"); PreloadSound("scare_scratch"); PreloadSound("break_wood"); 
+	PreloadSound("scare_male_terrified"); PreloadSound("scare_thump_flash"); PreloadSound("general_piano02"); PreloadSound("general_wind_whirl"); 
+    PreloadSound("scare_wall_scratch_single"); PreloadSound("general_piano01"); PreloadSound("gameplay_tick"); PreloadSound("lock_door"); 
+	PreloadSound("03_cloud_swarm"); PreloadSound("03_in_a_bottle"); PreloadSound("general_piano03"); PreloadSound("general_blood_drop"); 
+                                      
+	PreloadParticleSystem("ps_break_wood"); PreloadParticleSystem("ps_dust_piano"); PreloadParticleSystem("ps_dust_impact");
+	PreloadParticleSystem("ps_cloud_thing01"); PreloadParticleSystem("ps_blood_drop"); PreloadParticleSystem("ps_dust_falling_small");
+	PreloadParticleSystem("ps_orb_on_player"); 
+	      
+	     
+	//----AUDIO----//
+	PlayMusic("amb_soft_mood.ogg", true, 1, 0.1f, 0, true);
+	AutoSave();
+}
+
+////////////////////////////
+// Run when leaving map
+void OnLeave()
+{
+
+}

@@ -1,0 +1,22 @@
+////////////////////////////
+// Run first time starting map
+void OnStart()
+{
+	//----QUEST INIT----//
+	SetNumberOfQuestsInMap(0);
+}
+
+////////////////////////////
+// Run when entering map
+void OnEnter()
+{	
+	AddTimer("BeginEndingTimer", 1.0f, "TimerEnding");
+}
+
+
+
+// End gaem :)
+void TimerEnding(string &in asTimer)
+{
+	StartCredits("ending_agrippa.ogg", false, "Ending", "MainCredits", 1);
+}

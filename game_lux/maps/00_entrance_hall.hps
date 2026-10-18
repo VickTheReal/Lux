@@ -1,0 +1,169 @@
+////////////////////
+//BEGIN LARGE ROOM//
+/*Bird wings when entering room first time
+ */
+void CollideEnterLargeRoom(string &in asParent, string &in asChild, int alState)
+{
+	PlaySoundAtEntity("BirdSound", "general_birds_flee", "BirdSound", 0, false);
+	
+	AddTimer("whirl", 7, "TimerDustWhirl");
+
+	/*DEBUG
+	 */	
+	AddDebugMessage("Entered big room, birds flee!", true);
+}
+/*Random whirls of dust
+ */
+void TimerDustWhirl(string &in asTimer)
+{
+	int iWhirl= RandFloat(1, 4);
+	float fWhirl= RandFloat(0.5f,15.5f);
+	
+	CreateParticleSystemAtEntity("whirl"+iWhirl, "ps_dust_whirl.ps", "Whirl0"+iWhirl, false);
+	
+	PlaySoundAtEntity("whirl"+iWhirl, "general_wind_whirl.snt", "Whirl0"+iWhirl, 0, false);
+	
+	AddTimer("whirl", 14.5f+fWhirl, "TimerDustWhirl");
+	
+	/*DEBUG
+	 */
+	AddDebugMessage("Where Whirl Now: "+iWhirl+" Next Whirl In: "+(14.5f+fWhirl), true);
+}
+//END LARGE ROOM//
+//////////////////
+
+void CollideFirstQuest(string &in asParent, string &in asChild, int alState)
+{
+	AddQuest("QHollowNeedle", "QHollowNeedle");
+}
+
+//////////////////////
+//BEGIN BLOCKED DOOR//
+/*Break wood planks to unlock door
+ */
+void FuncUnlockDoor(string &in asEntity, string &in asType)
+{
+	SetSwingDoorLocked("castle_arched01_1", false, true);
+	
+	/*DEBUG
+	 */
+	AddDebugMessage("UnlockDoor!", true);
+}
+//END BLOCKED DOOR//
+////////////////////
+
+/////////////////////////////////
+//BEGIN LOCKED WINE CELLAR DOOR//
+void PlayerInteractDoor(string &in asEntity)
+{
+	if(HasItem("key_study_1")) SetMessage("Ch01Level02", "InteractDoorHaveKey", 0);
+}
+void UseKeyOnDoor(string &in asItem, string &in asEntity)
+{
+	PlaySoundAtEntity("unlocked", "unlock_door", asEntity, 0.0f, false);
+	
+	GiveSanityBoostSmall();
+	
+	SetLevelDoorLocked(asEntity, false);
+	RemoveItem(asItem);
+}
+//END LOCKED WINE CELLAR DOOR//
+///////////////////////////////
+
+///////////////////////////
+//BEGIN LOCKED FINAL DOOR//
+
+void UseNeedleOnDoor(string &in asItem, string &in asEntity)
+{
+	PlaySoundAtEntity("unlocked", "unlock_door", asEntity, 0.0f, false);
+	
+	GiveSanityBoostSmall();
+	
+	CompleteQuest("QHollowNeedle", "QHollowNeedle");
+	
+	SetLevelDoorLocked(asEntity, false);
+	RemoveItem(asItem);
+}
+//END LOCKED FINAL DOOR//
+///////////////////////////////
+
+void InteractLockedDoor(string &in asEntity)
+{
+	AddTimer("lockeddoor", 0.5f, "TimerLockedDoor4evah");
+	
+	PlaySoundAtEntity("locked_"+asEntity, "locked_door", asEntity, 0.0f, false);
+}
+void TimerLockedDoor4evah(string &in asTimer)
+{
+	SetMessage("LevelDoors", "LockedForever", 0);
+}
+
+
+/////////////////////////////
+//BEGIN INTERACT LARGE GATE//
+
+void InteractLargeGate(string &in asEntity)
+{
+	PlayGuiSound("close_gate.ogg", 0.5f);
+}
+
+//END INTERACT LARGE GATE//
+///////////////////////////
+
+////////////////////////////
+// Run first time starting map
+void OnStart()
+{
+	//----COLLIDE CALLBACKS----//
+	AddEntityCollideCallback("Player", "ScareBirds", "CollideEnterLargeRoom", true, 1);
+	AddEntityCollideCallback("Player", "AreaFirstQuest", "CollideFirstQuest", true, 1);
+	
+	//---- INTERACT INIT ----//
+	AddUseItemCallback("UseKeyOnDoor", "key_study_1", "level_wood_2", "UseKeyOnDoor", true);
+	AddUseItemCallback("UseNeedleOnDoor", "hollow_needle_1", "level_celler_2", "UseNeedleOnDoor", true);
+
+	SetEntityPlayerInteractCallback("castle_1", "PlayerInteractDoor", true);
+	SetEntityCustomFocusCrossHair("LargeGate", "LevelDoor");
+	
+	FadeOut(0);
+	FadeIn(2);
+	
+	//---- ENITTY INIT----//
+	SetNumberOfQuestsInMap(1);
+}
+
+
+////////////////////////////
+// Run when entering map
+void OnEnter()
+{		
+	SetMapDisplayNameEntry("EntranceHall");
+		
+	//----PRELOADING----//
+	PreloadSound("react_scare"); PreloadSound("general_birds_flee"); PreloadSound("general_wind_whirl"); PreloadSound("slime_loop"); 
+	PreloadSound("amb_guardian"); PreloadSound("guardian_distant1"); PreloadSound("guardian_distant2"); PreloadSound("guardian_distant3"); 
+	PreloadSound("slime_create"); 
+   
+	PreloadParticleSystem("ps_dust_whirl"); PreloadParticleSystem("ps_slime_fog"); //PreloadParticleSystem("ps_slime_wall_flat");
+	PreloadParticleSystem("ps_slime_fog_falling"); PreloadParticleSystem("ps_trail_flow"); PreloadParticleSystem("ps_trail_large"); 
+	
+	     
+	//----AUDIO----//
+	SetFogProperties(10, 50, 1, false);
+	SetFogColor(0.12f, 0.14f, 0.18f, 1);
+	SetFogActive(true);
+	
+	PlayMusic("amb_hub.ogg", true, 0.5f, 5, 0, true);
+	
+	//----PLAYER INIT----//
+	SetPlayerRunSpeedMul(1);	//Able to run now!
+	
+	AutoSave();
+}
+
+////////////////////////////
+// Run when leaving map
+void OnLeave()
+{	
+	StopMusic(5, 0);
+}

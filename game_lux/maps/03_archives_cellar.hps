@@ -1,0 +1,199 @@
+////////////////////////////
+// Open first gate with lever
+void GateLeverPulled(string &in asConnectionName, string &in asMainEntity, string &in asConnectEntity, int alState)
+{
+	SetLeverStuckState(asMainEntity, -1, true);
+	
+	SetLocalVarInt("castle_portcullis_1", 1);
+	SetEntityPlayerInteractCallback("castle_portcullis_1", "", true);
+	
+	StartScreenShake(0.01f, 0, 0.5f, 1.0f);
+	PlaySoundAtEntity("clonk", "07_lever", asMainEntity, 0, false);
+	PlaySoundAtEntity("clonk2", "07_lever2", asMainEntity, 0, false);
+	PlaySoundAtEntity("ticking1", "07_tick", asMainEntity, 1, true);
+	PlaySoundAtEntity("ticking2", "07_tick", asConnectEntity, 1, true);
+	
+	float fTime = 	42.5f + GetLocalVarFloat("TimeAdd");
+	AddTimer("Gate1Down", fTime, "TimerFirstGateGoesDown");
+	AddTimer("clonk2", 0.5f, "TimerStopLeverSound");
+	AddLocalVarFloat("TimeAdd", 2.5f);
+	
+	AddDebugMessage("Lever pulled to: "+alState + " time: "+fTime, false);
+	
+}
+void TimerStopLeverSound(string &in asTimer)
+{
+	StopSound(asTimer, 1.0f);
+}
+void TimerFirstGateGoesDown(string &in asTimer)
+{
+	SetMoveObjectState("castle_portcullis_1", 0);
+	SetLeverStuckState("lever_simple01_1", 0, true);
+	
+	StopSound("ticking1", 0.5f);
+	StopSound("ticking2", 0.5f);
+	
+	//TODO: Play *clonk* sound?
+	SetEntityPlayerInteractCallback("castle_portcullis_1", "InteractGate", true);
+	SetLocalVarInt("castle_portcullis_1", 0);
+	
+	AddDebugMessage("Gate goes down!", false);
+}
+
+void CollidePastFirstGate(string &in asParent, string &in asChild, int alState)
+{
+	//Make the gate came down instantly!
+	RemoveTimer("Gate1Down");
+	StopSound("ticking1", 0.5f);
+	StopSound("ticking2", 0.5f);
+	
+	SetMoveObjectStateExt("castle_portcullis_1", 0, 3, 4, 0.1, true);
+	
+	SetEntityPlayerInteractCallback("castle_portcullis_1", "", true);
+	SetLocalVarInt("castle_portcullis_1", 1);
+	
+	// Check point	
+	CheckPoint("check02","PlayerStartArea_x4", "CheckPoint02", "Hints", "DeathWaterLurker02");
+}
+
+////////////////////////////
+// Gate close effect
+void CollideGateWithWater(string &in asParent, string &in asChild, int alState)
+{
+	CreateParticleSystemAtEntity("splash", "ps_impact_water_high", asParent, false);
+	PlaySoundAtEntity("splash", "impact_water_med", asParent, 0, false);
+}
+
+////////////////////////////
+// Create all the body parts
+void CreateOrResetEntity(string &in asName, string &in asFile, string &in asArea)
+{
+	if(GetEntityExists(asName)==false)
+	{
+		CreateEntityAtArea(asName, asFile, asArea, true);	
+	}
+	else
+	{
+		ResetProp(asName);
+	}	
+}
+
+void CreateAndResetBodyParts()
+{
+	for(int i=1; i<=4; ++i)
+	{
+		CreateOrResetEntity("FoodArm"+i, "/organic/corpse_male/corpse_male_arm.ent", "AreaArm_"+i);
+	}
+	for(int i=1; i<=3; ++i)
+	{
+		CreateOrResetEntity("FoodLeg"+i, "/organic/corpse_male/corpse_male_leg.ent", "AreaLeg_"+i);
+	}
+	for(int i=1; i<=2; ++i)
+	{
+		CreateOrResetEntity("FoodTorso"+i, "/organic/corpse_male/corpse_male_torso.ent", "AreaTorso_"+i);
+	}
+	
+}
+
+///////////////////////////
+//INTERACT SECURITY GATES
+void InteractGate(string &in asEntity)
+{
+	PlayGuiSound("17_attach_crank", 0.5f);
+	SetMessage("Ch01Level07", "SecurityGate", 0);
+	
+	SetMoveObjectState(asEntity, 0.05f);
+	
+	AddTimer(asEntity, 0.4f, "TimerCloseGate");
+	AddTimer("sound", 0.8f, "TimerCloseGate");
+}
+void TimerCloseGate(string &in asTimer)
+{
+	if(asTimer == "sound"){
+		PlayGuiSound("close_gate.ogg", 0.5f);
+	} else{
+		SetMoveObjectState(asTimer, 0.00f);
+		
+		if(GetLocalVarInt(asTimer) != 1)
+			SetEntityPlayerInteractCallback(asTimer, "InteractGate", true);	
+	}
+}
+void InteractWheel(string &in asEntity)
+{
+	SetEntityPlayerInteractCallback("castle_portcullis_2", "", true);	
+}
+
+////////////////////////////
+//FINAL GRUNT ENCOUNTER
+void PickNeedle(string &in asEntity, string &in asType)
+{	
+	SetEntityActive("servant_grunt_1", true);
+	SetEntityActive("castle_portcullis_1", false);
+	SetEntityActive("castle_portcullis_2", false);
+}
+
+////////////////////////////
+// Run first time starting map
+void OnStart()
+{
+	SetMapDisplayNameEntry("ArchivesCellar");
+	
+	///////////////////////////////
+	// Create all body parts
+	CreateAndResetBodyParts();
+	
+	///////////////////////////////
+	// Vars
+	SetLocalVarFloat("TimeAdd", 0); //Time add for lever gate
+	
+	///////////////////////////////
+	// Set up areas
+	AddEntityCollideCallback("Player","PastFirstGate", "CollidePastFirstGate", true, 0);
+	
+	AddEntityCollideCallback("GateCloseEffect_1", "castle_portcullis_1", "CollideGateWithWater", false, 1);
+	AddEntityCollideCallback("GateCloseEffect_2", "castle_portcullis_2", "CollideGateWithWater", false, 1);
+	
+	AddEnemyPatrolNode("servant_grunt_1", "PathNodeArea_48", 2.0f, "");
+	AddEnemyPatrolNode("servant_grunt_1", "PathNodeArea_59", 2.0f, "");
+	AddEnemyPatrolNode("servant_grunt_1", "PathNodeArea_78", 2.0f, "");
+	AddEnemyPatrolNode("servant_grunt_1", "PathNodeArea_107", 5.0f, "");
+	AddEnemyPatrolNode("servant_grunt_1", "PathNodeArea_62", 5.0f, "");
+	
+	///////////////////////////////
+	// Connections
+	ConnectEntities("FirstGate","lever_simple01_1","castle_portcullis_1", true, -1, "GateLeverPulled");
+	
+	InteractConnectPropWithMoveObject("SecondGate","valve_iron_1", "castle_portcullis_2",true, false, 0);
+
+	SetEntityCustomFocusCrossHair("ScriptArea_1", "Default");
+	
+	SetFogActive(false);
+
+	//----QUEST INIT----//
+	SetNumberOfQuestsInMap(0);
+}
+
+////////////////////////////
+// Run when entering map
+void OnEnter()
+{	
+	PlayMusic("spider_danger.ogg", true, 1, 0.1f, 0, true);
+	
+	PreloadSound("scare_wall_stomp"); PreloadSound("guardian_distant3"); PreloadSound("gameplay_tick_long_dist");
+	PreloadSound("ater_lurker_hunt"); PreloadSound("break_wood_metal"); PreloadSound("unlock_door"); PreloadSound("guardian_activated");
+	PreloadSound("guardian_idle"); 
+	
+	PreloadParticleSystem("ps_impact_water_high");
+	
+	
+	///////////////////
+	// Auto save
+	AutoSave();
+}
+
+////////////////////////////
+// Run when leaving map
+void OnLeave()
+{
+
+}

@@ -1,0 +1,766 @@
+////////////////////////
+//BEGIN MOANING HORROR//
+/*Start the creak sounds + ps when entering basement, stop them when leaving the basement/area
+ */
+void FuncMoanHorrors(string &in asParent, string &in asChild, int alState)
+{
+	float fMoan = RandFloat(5.5f,15.5f);
+	
+	AddTimer("moanTimer", 4.5f+fMoan, "FuncMoanTimer");	
+	
+	AddTimer("childTimer", 0.5f+fMoan, "FuncMoanTimer");	
+	
+	/*DEBUG
+	 */
+	AddDebugMessage("Begin moaning sounds", true);
+}
+/*Random placment of creak at random time
+ */
+void FuncMoanTimer(string &in asTimer)
+{
+	int iMoan = RandFloat(2, 6);	
+	float fMoan = RandFloat(5.5f,15.5f);
+	
+	if(asTimer == "moanTimer") {
+		PlaySoundAtEntity("moanSound"+iMoan, "scare_male_terrified.snt", "HorrorMoan_"+iMoan, 0.0f, false);
+		
+		AddTimer("moanTimer", 6.5f+fMoan, "FuncMoanTimer");
+	} 
+	else if(asTimer == "childTimer") {
+		iMoan = RandFloat(2, 6);	
+		
+		PlaySoundAtEntity("childSound"+iMoan, "scare_baby_cry.snt", "HorrorMoan_"+iMoan, 0.0f, false);
+		
+		AddTimer("childTimer", 8.5f+fMoan, "FuncMoanTimer");
+	}
+
+	/*DEBUG
+	 */
+	AddDebugMessage("Now moaning in area: "+iMoan, false);
+}	
+//END MOANING HORROR//
+//////////////////////
+
+
+///////////////////////////////
+//BEGIN CREAKING WOOD CEILING//
+/*Start the creak sounds + ps when entering basement, stop them when leaving the basement/area
+ */
+void FuncCreakHorrors(string &in asParent, string &in asChild, int alState)
+{
+	if(asChild == "EnterCreakOnArea") {
+		float fCreak = RandFloat(0.5f,6.5f);
+	
+		AddTimer("creak", 2.5f+fCreak, "FuncCreakTimer");
+		
+		AddEntityCollideCallback("Player", "EnterCreakOffArea", "FuncCreakHorrors", true, 1);
+		
+	} else {
+		RemoveTimer("creak");
+		
+		AddEntityCollideCallback("Player", "EnterCreakOnArea", "FuncCreakHorrors", true, 1);
+	}
+	
+	/*DEBUG
+	 */
+	AddDebugMessage("Player in/out creak: "+asChild, true);
+}
+/*Random placment of creak at random time
+ */
+void FuncCreakTimer(string &in asTimer)
+{
+	int iCreak = RandFloat(1, 7);	
+	float fCreak = RandFloat(4.5f,14.5f);
+	
+	CreateParticleSystemAtEntity("creakPS"+iCreak, "ps_dust_falling_small_thin.ps", "HorrorCreak_"+iCreak, false);
+	
+	PlaySoundAtEntity("creakSound"+iCreak, "scare_wood_creak_mix.snt", "HorrorCreak_"+iCreak, 0.0f, false);
+	
+	AddTimer("creak", 5.5f+fCreak, "FuncCreakTimer");
+	
+	/*DEBUG
+	 */
+	AddDebugMessage("Now creaking in area: "+iCreak+" Next creak in: "+(5.5f+fCreak), true);
+}	
+//END CREAKING WOOD CEILING//
+/////////////////////////////
+
+
+//////////////////////
+//BEGIN BREAK STAIRS//
+void CollideBreakStairs(string &in asParent, string &in asChild, int alState)
+{
+	BreakMyStairs();
+}
+void BreakMyStairs()
+{
+	if(GetLocalVarInt("StairsWentDownTheDrain") == 1) return;
+	
+	SetEntityActive("cave_in_1", false);
+	SetEntityActive("cavedx_*", true);
+	
+	CreateParticleSystemAtEntity("stairsPS", "ps_dust_break_stair.ps", "AreaStairsParticle", false);
+	
+	PlaySoundAtEntity("stairsS", "break_stairs.snt", "AreaStairsParticle", 0.5f, false);
+
+	SetPropHealth("stairs_wood_1", 0);
+	AddTimer("sanity", 1, "TimerSanity");
+	AddTimer("sanity2", 2.5, "TimerSanity");
+	AddTimer("sanity3", 4, "TimerSanity");
+	AddTimer("sanity4", 5, "TimerSanity");
+	AddTimer("sanity5", 7, "TimerSanity");
+	
+	SetLocalVarInt("StairsWentDownTheDrain", 1);
+	
+	RemoveTimer("rockbreath");
+	
+	//Turn off some lights!
+	SetLampLit("torch_static01_16", false, true);
+	SetLampLit("torch_static01_13", false, true);
+	SetLampLit("torch_static01_12", false, true);
+	SetLampLit("torch_static01_14", false, true);
+}
+void TimerSanity(string &in asTimer)
+{
+	if(asTimer == "sanity"){
+		GiveSanityDamage(10, true);
+	}
+	else if(asTimer == "sanity2"){
+	}
+	else if(asTimer == "sanity3"){
+	}
+	else if(asTimer == "sanity4"){
+	}
+	else if(asTimer == "sanity5"){
+		SetPlayerMoveSpeedMul(1.0f);
+		SetPlayerRunSpeedMul(1.0f);
+	}
+}
+//END BREAK STAIRS//
+////////////////////
+
+
+//////////////////////
+//BEGIN ACID MACHINE//
+
+void VisionOverAcid()
+{
+	SetMessage("MiscellaneousMessages", "FlashbackGuide", 0);
+}
+
+/*Use jar on machine to place it under pipe
+ */
+void ItemJarOnMachine(string &in asItem, string &in asEntity)
+{
+	SetEntityActive("chemical_container_static_1", true);
+	
+	RemoveItem(asItem);
+	
+	PlaySoundAtEntity("PlaceJar","puzzle_place_jar", "AreaCompleteSuccess", 0, false);
+	
+	SetLocalVarInt("chemical_container_static_1", 1);
+}
+/*Use chemicals on machine or valves to add it to bottles
+ */
+void AddChemical(string &in asItem, string &in asEntity)
+{
+	RemoveItem(asItem);
+	
+	AddLocalVarInt("ChemicalsInMachine", 1);
+	
+	SetEntityActive("JarEmpty"+asItem, false);
+	SetEntityActive("Jar"+asItem, true);
+	
+	PlaySoundAtEntity(asItem+"Sound","puzzle_add_chemical.snt", asEntity, 1, false);
+	FadeLightTo("Light"+asItem, -1, -1, -1, -1, 0.5f, 0.1f);
+	
+	if(GetLocalVarInt("ChemicalsInMachine") == 3 )
+		BreakMyStairs();
+	
+	if(GetLocalVarInt("ChemicalsInMachine") == 4){
+		GiveSanityBoostSmall();
+		SetEntityActive("FlashbackArea_1", true);
+		UnBlockHint("EntityWheel");
+		for(int i=1;i<=4;i++) 
+			SetEntityPlayerInteractCallback("Valve_"+i, "InteractAcidMachine02", true);	
+		SetLocalVarInt("DoBigFeet", 0); 
+	}
+}
+/*When touching the vales
+ */
+void InteractAcidMachine(string &in asEntity)
+{
+	if(GetLocalVarInt("ChemicalsInMachine") != 4)
+	{
+		SetMessage("Ch01Level04", "InteractAcidMachineNoChem",-1);
+	}
+	else if(GetLocalVarInt("ChemicalsInMachine") == 4)
+	{
+		SetWheelStuckState("ValveIgnite", 0, false);
+	}
+}
+void InteractAcidMachine02(string &in asEntity)
+{
+	if(GetLocalVarInt("ValveIgniteFirst") == 0)
+	{
+		SetMessage("Ch01Level03", "MachineNeedsToStart", 0);
+		SetLocalVarInt("ValveIgniteFirst", 1);
+		for(int i=1;i<=4;i++) 
+			SetEntityPlayerInteractCallback("Valve_"+i, "InteractAcidMachine", false);	
+	}
+}
+/*Moving the big valve will turn on the burners and ready the machine
+ */
+void InteractTurnOnAcidMachine(string &in asName, string &in asMainEntity, string &in asConnectEntity, int alState)
+{
+	AddDebugMessage("Connect "+asMainEntity+" and "+asConnectEntity+" state:"+alState, false);
+	
+	if(alState == 1)
+	{
+		for(int i=1;i<=4;i++) {
+			CreateParticleSystemAtEntity(asName+"Fire"+i, "ps_fire_candle.ps", "Valve_"+i+"_AreaBottle", false);
+			
+			FadeLightTo("Valve_"+i+"_Light", -1, -1, -1, -1, 0.4f, 1);
+			
+			SetWheelStuckState("Valve_"+i, 0, true);
+		} 
+		
+		SetLocalVarInt("ValveIgniteFirst", 1);
+		
+		FadeLightTo("LightBurn", -1, -1, -1, -1, 3.0f, 2);
+		
+		PlaySoundAtEntity("IgniteSound", "general_fire_burning_low", "Valve_1_AreaBottle", 1, false);
+		
+		SetWheelStuckState("ValveIgnite", 1, true);
+	} 
+	else if(alState == -1)
+	{
+		for(int i=1;i<=4;i++){
+			DestroyParticleSystem(asName+"Fire"+i);
+			
+			FadeLightTo("Valve_"+i+"_Light", -1, -1, -1, -1, 0, 1);
+			
+			SetWheelStuckState("Valve_"+i, -1, true); 
+		} 		
+		
+		FadeLightTo("LightBurn", -1, -1, -1, -1, 0, 2);
+		
+		StopSound("IgniteSound", 1);
+	}
+}
+/*Turning the four valves on/off to try and get the sequence right
+ */
+void InteractTurnValve(string &in asName, string &in asMainEntity, string &in asConnectEntity, int alState)
+{
+	/*START WHAT HAPPENS WHEN VAVLES ARE TURNED ON
+	 */
+	if(alState == 1) {
+
+		 /*Mark Valve as on
+		  */
+		SetLocalVarInt(asMainEntity, 1);
+		AddLocalVarInt("ValvesNrOn", 1);
+		
+		AddDebugMessage("ValvesNrOn: "+GetLocalVarInt("ValvesNrOn")+" And Feet "+GetLocalVarInt("DoBigFeet"), false);
+		
+		if(GetLocalVarInt("ValvesNrOn") == 0){
+			SetWheelStuckState("ValveIgnite", -1, true); 
+
+			PlaySoundAtEntity("FinalBoil","puzzle_boil.snt", "Valve_4_AreaValve", 1, false);
+			
+			CreateParticleSystemAtEntity("FinalSteam", "ps_acid_machine_bubble_large02.ps", "Valve_4_AreaValve", false); 
+			CreateParticleSystemAtEntity("FinalFlow", "ps_acid_machine_bubble_end.ps", "AreaCompleteSuccess", false); 
+			
+			FadeLightTo("LightBurn", -1, 1, -1, -1, 3.0f, 5);
+			FadeLightTo("LightAcid", -1, -1, -1, -1, 0.3f, 2);
+			
+			AddTimer("done", 2, "TimerAcidDone");	
+			
+		} else DoEffectLarge(asName, asConnectEntity);
+		
+		/*If three vavles on, reset the machine
+		 */
+		if((GetLocalVarInt("Valve_1")+GetLocalVarInt("Valve_2")+GetLocalVarInt("Valve_3")+GetLocalVarInt("Valve_4")) > 2 ) {
+			for(int i=1;i<=4;i++) SetWheelStuckState("Valve_"+i, -1, true); 
+			
+			AddTimer("release", 0.1f, "TimerReleaseValves");
+			return;
+		}
+
+		/*If the valve turned on is the correct order move ahead, if not hint of wrong order
+		 */
+		if(asMainEntity == "Valve_1"){
+			if(GetLocalVarInt("RoadToSuccess") == 0) DoEffectLarge(asName, asConnectEntity);
+			else DoEffectSmall(asName, asConnectEntity);
+		} 
+		else if(asMainEntity == "Valve_2"){
+			if(GetLocalVarInt("RoadToSuccess") == 1) DoEffectLarge(asName, asConnectEntity);
+			else DoEffectSmall(asName, asConnectEntity);	
+		} 
+		else if(asMainEntity == "Valve_3"){
+			if(GetLocalVarInt("RoadToSuccess") == 3){ 
+				DoEffectLarge(asName, asConnectEntity); 
+			} 
+			else DoEffectSmall(asName, asConnectEntity);	
+		} 
+		else if(asMainEntity == "Valve_4"){
+			if(GetLocalVarInt("RoadToSuccess") == 5) DoEffectLarge(asName, asConnectEntity);
+			else DoEffectSmall(asName, asConnectEntity);
+		}
+	} 
+	
+	/*START WHAT HAPPENS WHEN VAVLES ARE TURNED OFF
+	 */
+	else if(alState == -1){
+
+		 /*Mark valve as off
+		  */
+		SetLocalVarInt(asMainEntity, 0);
+		
+		AddLocalVarInt("ValvesNrOn", -1);
+		
+		DestroyParticleSystem(asName+"PSteam");
+		StopSound(asName+"SBoil",1); StopSound(asName+"SSteam",1);
+		
+		/*If valved turned off in the right order, allow for attempt at turning the next valve in the correct order
+		 */
+		if(asMainEntity == "Valve_1" && GetLocalVarInt("RoadToSuccess") == 2) AddLocalVarInt("RoadToSuccess", 1);
+		
+		else if(asMainEntity == "Valve_2" && GetLocalVarInt("RoadToSuccess") == 4) AddLocalVarInt("RoadToSuccess", 1);	
+		
+		else if(asMainEntity == "Valve_3" && GetLocalVarInt("RoadToSuccess") == 6){ //Full sequence correct, spit out the chemical substance
+			SetWheelStuckState("ValveIgnite", -1, true); 
+
+			PlaySoundAtEntity("FinalBoil","puzzle_boil.snt", "Valve_4_AreaValve", 1, false);
+			
+			CreateParticleSystemAtEntity("FinalSteam", "ps_acid_machine_bubble_large02.ps", "Valve_4_AreaValve", false); 
+			CreateParticleSystemAtEntity("FinalFlow", "ps_acid_machine_bubble_end.ps", "AreaCompleteSuccess", false); 
+			
+			FadeLightTo("LightBurn", -1, 1, -1, -1, 3.0f, 5);
+			FadeLightTo("LightAcid", -1, -1, -1, -1, 0.3f, 2);
+			
+			AddTimer("done", 2, "TimerAcidDone");	
+		} 
+		else if(asMainEntity == "Valve_4" && GetLocalVarInt("RoadToSuccess") == 6) AddLocalVarInt("RoadToSuccess", -1);
+		
+		/*If all valves are off, reset the machine
+		 */
+		if((GetLocalVarInt("Valve_1")+GetLocalVarInt("Valve_2")+GetLocalVarInt("Valve_3")+GetLocalVarInt("Valve_4")) == 0 )
+			SetLocalVarInt("RoadToSuccess", 0);
+	}
+	
+	AddDebugMessage("Rate of success "+GetLocalVarInt("RoadToSuccess"), false);
+	AddDebugMessage(asMainEntity+" is turned to "+alState, true);
+}
+/*Large effects as correct valve rotated
+ */
+void DoEffectLarge(string &in asName, string &in asWhere)
+{
+	CreateParticleSystemAtEntity(asName+"PSteam", "ps_acid_machine_bubble_large.ps", asWhere, false); 
+	
+	PlaySoundAtEntity(asName+"SBoil","puzzle_boil_low.snt", asWhere, 1, false);
+	PlaySoundAtEntity(asName+"SSteam","puzzle_gas.snt", asWhere, 1, false);
+	
+	AddLocalVarInt("RoadToSuccess", 1); 
+}
+/*Small effects as incorrect valve rotated
+ */
+void DoEffectSmall(string &in asName, string &in asWhere)
+{
+	CreateParticleSystemAtEntity(asName+"PSteam", "ps_acid_machine_bubble_small.ps", asWhere, false); 
+	
+	PlaySoundAtEntity(asName+"SBoil","puzzle_boil_low.snt", asWhere, 1, false);
+}
+/*When reseting machine on more than 2 valves turned, this timer turns it on again
+ */
+void TimerReleaseValves(string &in asTimer)
+{
+	for(int i=1;i<=4;i++) SetWheelStuckState("Valve_"+i, 0, false);  
+	
+	SetLocalVarInt("RoadToSuccess", 0);
+}
+/*The acid spit on success, if no jar present the acid will just spill and it is possible to try again
+ */
+void TimerAcidDone(string &in asTimer)
+{
+	DestroyParticleSystem("Part4PSteam");
+	DestroyParticleSystem("FinalSteam");
+
+	PlaySoundAtEntity("AcidDone","puzzle_acid", "AreaCompleteSuccess", 0, false);
+	
+	StopSound("FinalBoil",1);
+	
+	FadeLightTo("LightAcid", -1, -1, -1, -1, 0, 4);
+	FadeLightTo("LightBurn", -1, 0.3f, -1, -1, 0, 3);
+	
+	SetWheelStuckState("ValveIgnite", 0, true); 
+	
+	if(GetLocalVarInt("chemical_container_static_1") == 1){
+		SetEntityActive("chemical_container_static_1", false);
+		SetEntityActive("chemical_container_2", true);
+		//SetPropActiveAndFade("chemical_container_static_1", false, 0.5f);
+		//SetPropActiveAndFade("chemical_container_2", true, 0.5f);
+	
+		PlaySoundAtEntity("AcidSuccess","puzzle_acid_success", "AreaCompleteSuccess", 0, false);
+		//GiveSanityBoostSmall();
+		
+		CompleteQuest("QAcid", "QAcid");
+		
+		SetWheelStuckState("ValveIgnite", -1, true); 
+		
+	} 
+	else {
+		PlaySoundAtEntity("AcidFail","puzzle_acid_fail", "AreaCompleteSuccess", 0, false);
+		SetMessage("Ch03Level26", "NoContainerBelowSqueezer", 0);
+	}
+}
+void PickFinalAcid(string &in asEntity, string &in asType)
+{
+	GiveSanityBoostSmall();
+	
+	AddQuest("QAcidSpider", "QAcidSpider");
+	
+	SetGlobalVarString(asEntity, asEntity);
+	
+	AddTimer("Thunder", 0.75f, "TimerEnterClank");
+}
+void EntityCallPickEmptyChem(string &in asEntity, string &in type)
+{
+	GiveSanityBoostSmall();
+}
+
+//END ACID MACHINE//
+////////////////////
+
+
+///////////////////////////
+//BEGIN LOOKING DOWN HOLE//
+void CollideActiveHole(string &in asParent, string &in asChild, int alState)
+{
+	SetEntityActive("AreaLookHole", true);
+}
+void LookAtHole(string &in entity, int alState)
+{
+	if(alState != 1) return;
+	
+	AddTimer("TimerLookHole", 0.1f, "TimerLookHole");	
+}
+void TimerLookHole(string &in asTimer)
+{	
+	/*Configurables
+	 */
+	int iMaxEventStep = 12;		//How many steps there are in the switch event
+	float fEventSpeed = 1.0f;	//The default time between steps in an event
+	
+	/*Helpers - Do not edit
+	 */
+	string sEvent = asTimer;	//Using first timer name for variable, timer name & callback for the timer that loops
+	AddLocalVarInt(sEvent, 1);	//What step to play in the event
+
+	/*Steps in the event
+	 */
+	switch(GetLocalVarInt(sEvent)){
+		case 1:
+			PlaySoundAtEntity("HoleCry","04_hole_squeal", "AreaHoleEffects", 0, false);
+			StartScreenShake(0.004, 6, 2, 2);
+			GiveSanityDamage(10.0f, true);
+		break;
+		case 2:
+			PlaySoundAtEntity("HoleWater","04_water_puff.snt", "AreaHoleEffects", 0, false);
+			CreateParticleSystemAtEntity("HolePS1", "waterlurker_run_splash.ps", "AreaHoleEffects", false); 
+			fEventSpeed = 0.25f;
+		break;
+		case 3:
+			PlaySoundAtEntity("HoleWater2","04_water_puff.snt", "AreaHoleEffects", 0, false);
+			fEventSpeed = 0.5f;
+		break;
+		case 4:
+			PlaySoundAtEntity("HoleWater3","04_water_puff.snt", "AreaHoleEffects", 0, false);
+			CreateParticleSystemAtEntity("HolePS2", "waterlurker_run_splash.ps", "AreaHoleEffects", false); 
+		break;
+		case 5:
+			PlaySoundAtEntity("HoleWater4","04_water_puff.snt", "AreaHoleEffects", 0, false);
+			fEventSpeed = 0.5f;
+		break;
+		case 6:
+			PlaySoundAtEntity("HoleWater5","04_water_puff.snt", "AreaHoleEffects", 0.4f, false);
+			CreateParticleSystemAtEntity("HolePS3", "waterlurker_run_splash.ps", "AreaHoleEffects", false); 
+			fEventSpeed = 0.25f;
+		break;
+		case 7:
+			PlaySoundAtEntity("HoleWater6","04_water_puff.snt", "AreaHoleEffects", 0.75f, false);
+			fEventSpeed = 0.75f;
+		break;
+		case 8:
+			PlaySoundAtEntity("HoleWater7","04_water_puff.snt", "AreaHoleEffects", 1, false);
+		break;
+		case 9:
+			PlaySoundAtEntity("HoleWater8","04_water_puff.snt", "AreaHoleEffects", 0.4f, false);
+			CreateParticleSystemAtEntity("HolePS3", "waterlurker_run_splash.ps", "AreaHoleEffects", false); 
+			fEventSpeed = 0.25f;
+		break;
+		case 10:
+			PlaySoundAtEntity("HoleWater9","04_water_puff.snt", "AreaHoleEffects", 0.75f, false);
+			fEventSpeed = 0.75f;
+		break;
+		case 11:
+			PlaySoundAtEntity("HoleWater10","04_water_puff.snt", "AreaHoleEffects", 1, false);
+		break;
+		case 12:
+		break;
+	}
+	
+	if(GetLocalVarInt(sEvent) <= iMaxEventStep) AddTimer(sEvent, fEventSpeed, sEvent);
+}
+//END LOOKING DOWN HOLE//
+/////////////////////////
+
+
+
+///////////////////////
+//BEGIN SPIDER CAVEIN//
+void CollideActivateSpider(string &in asParent, string &in asChild, int alState)
+{
+	SetEntityActive("AreaBeginSpider_1", true);
+	AddDebugMessage("In Area 1", false);
+	
+	SetLocalVarFloat("RockBreath", 2.0f);
+	
+	AddTimer("rockbreath", 0.2, "TimerRockBreath");	
+}
+void TimerRockBreath(string &in asTimer)
+{
+	if(GetLocalVarFloat("RockBreath") > 0.5f){
+		AddLocalVarFloat("RockBreath", -0.2f);
+		AddLocalVarFloat("RockShake", 0.001f);
+	}
+	
+	PlaySoundAtEntity("monster_breath","04_breath.snt", "AreaCaveMonster", GetLocalVarFloat("RockBreath"), false);
+	
+	StartScreenShake(GetLocalVarFloat("RockShake"), 0.5f, 2.0f, 1.0f);
+	CreateParticleSystemAtEntity("breathps", "ps_cave_monster_breath", "AreaCaveMonster", false);
+	
+	AddTimer("rockbreath", 5, "TimerRockBreath");	
+	
+	AddDebugMessage("Value: "+GetLocalVarFloat("RockBreath"), false);
+}
+void LookAtCave(string &in asEntity, int alState)
+{
+	PlaySoundAtEntity("monster_scream","04_warn.snt", "AreaCaveMonster", 0, false);
+	
+	StartScreenShake(0.007f, 2.0f, 0.5f, 2.0f);
+	
+	CreateParticleSystemAtEntity("breathps", "ps_cave_monster_warn.ps", "AreaCaveMonster", false);	
+
+	AddTimer("monster1", 0.5f, "TimerRockMonster");
+	AddTimer("monster2", 2.0f, "TimerRockMonster");
+	AddTimer("monster3", 3.0f, "TimerRockMonster");
+	AddTimer("monster4", 5.0f, "TimerRockMonster");
+}
+void TimerRockMonster(string &in asTimer)
+{
+	if(asTimer == "monster1"){
+		StartPlayerLookAt("AreaCaveMonster", 1.0f, 1.0f, "");
+		GiveSanityDamage(5.0f, false);
+		FadeRadialBlurTo(0.05f, 0.025f);
+		SetRadialBlurStartDist(0.1f);
+	}
+	else if(asTimer == "monster2"){
+		StopPlayerLookAt();
+	}
+	else if(asTimer == "monster3"){
+		FadeRadialBlurTo(0, 0.1f);
+	}
+	else{
+	}	
+}
+void CollideScreamCave(string &in asParent, string &in asChild, int alState)
+{
+	PlaySoundAtEntity("monster_scream","04_scream.snt", "AreaCaveMonster", 0, false);
+	
+	StartScreenShake(0.02f, 2.0f, 0.5f, 2.0f);
+	
+	CreateParticleSystemAtEntity("breathps", "ps_cave_monster_scream.ps", "AreaCaveMonster", false);	
+	
+	AddTimer("scream1", 0.5f, "TimerCaveScream");
+	AddTimer("scream2", 1.0f, "TimerCaveScream");
+	AddTimer("scream3", 3.0f, "TimerCaveScream");
+	AddTimer("scream4", 5.0f, "TimerCaveScream");
+}
+void TimerCaveScream(string &in asTimer)
+{
+	if(asTimer == "scream1"){
+		GiveSanityDamage(10.0f, false);
+		FadeSepiaColorTo(0.5f, 0.025f);
+		FadeRadialBlurTo(0.1f, 0.025f);
+		SetRadialBlurStartDist(0.2f);
+	}
+	else if(asTimer == "scream2"){
+	
+	}
+	else if(asTimer == "scream3"){
+		FadeSepiaColorTo(0, 0.1f);
+		FadeRadialBlurTo(0, 0.1f);
+	}
+	else{
+	}
+}
+//END SPIDER CAVEIN//
+/////////////////////
+
+//////////////////////////////
+//BEGIN ENTER LEVEL CLANKS//
+void TimerEnterClank(string &in asTimer)
+{	
+	AddQuest("QAcid", "QAcid");
+	
+	if(asTimer == "Clank_1"){
+		PlaySoundAtEntity("clanks","04_enter_clank.snt", "HorrorCreak_6", 0.5f, false);
+		FadeImageTrailTo(1.5f, 2);
+		
+		AddTimer("Clank_2", 0.75f, "TimerEnterClank");
+		AddTimer("Clank_3", 2.25f, "TimerEnterClank");
+	}
+	else if(asTimer == "Clank_2"){
+		GiveSanityDamage(10, true);
+	}	
+	else if(asTimer == "Clank_3"){ 
+		FadeImageTrailTo(0.0f, 2);
+	}
+	
+	else if(asTimer == "Thunder"){
+		PlaySoundAtEntity("thunder","general_thunder.snt", "Player", 0, false);
+	}
+	
+}
+//END ENTER LEVEL CLANKS//
+//////////////////////////
+
+
+void EntityCallLamp(string &in asEntity, string &in type)
+{
+	AddLocalVarFloat("AmbLight", 0.1f);
+	float fLight = GetLocalVarFloat("AmbLight");
+	
+	FadeLightTo("LightBurn_1", 0.15f+fLight, 0.125f+fLight, 0.1f+fLight, -1, -1, 1.0f);
+}
+
+////////////////////////////
+// Run first time starting map
+void OnStart()
+{
+	SetMapDisplayNameEntry("WineCellarLab");
+	
+	//----COLLIDE CALLBACKS----//
+	AddEntityCollideCallback("Player", "EnterCreakOnArea", "FuncCreakHorrors", true, 1);
+	AddEntityCollideCallback("Player", "AreaBreakStairs", "CollideBreakStairs", false, 1);
+	AddEntityCollideCallback("Player", "AreaLookHoleActive", "CollideActiveHole", true, 1);
+	AddEntityCollideCallback("Player", "AreaBeginSpider", "CollideActivateSpider", true, 1);
+	AddEntityCollideCallback("Player", "AreaScreamCave", "CollideScreamCave", true, 1);
+	
+	
+	//----ENTITY INIT----//
+	for(int i=1;i<=4;i++) {
+		ConnectEntities("Part_"+i, "Valve_"+i, "Valve_"+i+"_AreaValve", false, 0, "InteractTurnValve"); 
+		
+		SetWheelStuckState("Valve_"+i, -1, false);
+	}
+	ConnectEntities("Ignite", "ValveIgnite", "Valve_1_AreaBottle", false, 0, "InteractTurnOnAcidMachine");
+	
+	SetEntityActive("chemical_container_static_1", false);
+	SetEntityActive("chemical_container_2", false);
+	
+	SetWheelStuckState("ValveIgnite", -1, false);
+
+	AddUseItemCallback("placebottle", "chemical_container_1", "AreaUseMachine", "ItemJarOnMachine", true);
+	AddUseItemCallback("placebottle2", "chemical_container_1", "AreaPlaceJar", "ItemJarOnMachine", true);
+	AddUseItemCallback("placebottle3", "chemical_container_1", "ValveIgnite", "ItemJarOnMachine", true);
+	
+	for(int i=1;i<=4;i++) {
+		AddUseItemCallback("placebottlev"+i, "chemical_container_1", "Valve_"+i, "ItemJarOnMachine", true);
+		AddUseItemCallback("Chemicalvi_"+i, "Chemical_"+i, "ValveIgnite", "AddChemical", true);
+		AddUseItemCallback("Chemicala_"+i, "Chemical_"+i, "AreaUseMachine", "AddChemical", true);
+		AddUseItemCallback("Chemicalm_"+i, "Chemical_"+i, "acid_machine_1", "AddChemical", true);
+		
+		for(int j=1;j<=4;j++)
+			AddUseItemCallback("Chemicalv_"+i, "Chemical_"+i, "Valve_"+j, "AddChemical", true);
+	}
+	
+	SetEntityPlayerInteractCallback("ValveIgnite", "InteractAcidMachine", false);
+	for(int i=1;i<=4;i++) SetEntityPlayerInteractCallback("Valve_"+i, "InteractAcidMachine", false);	
+	
+	SetEntityPlayerLookAtCallback("AreaLookHole", "LookAtHole", true);
+	
+	BlockHint("EntityWheel");
+	
+	//----QUEST INIT----//
+	SetNumberOfQuestsInMap(1);
+	
+	FuncMoanHorrors("", "AreaBeginChild", 1);
+
+	SetGlobalVarInt("BeenToLab", 1);
+	
+	if(ScriptDebugOn())
+	{
+		GiveItemFromFile("lantern", "lantern.ent");
+		GiveItemFromFile("Chemical_1", "flask01_aqua_regia.ent");
+		GiveItemFromFile("Chemical_2", "flask01_calamine.ent");
+		GiveItemFromFile("Chemical_3", "flask01_cuprite.ent");
+		GiveItemFromFile("Chemical_4", "flask01_orpiment.ent");
+		
+		for(int i=0;i<10;i++) GiveItemFromFile("tinderbox_"+i, "tinderbox.ent");
+		
+		//SetWheelStuckState("ValveIgnite", 0, false);	//Normally stuck until all 4 chemicals in machine
+	}
+	
+	SetFogProperties(4, 16, 1, true);
+	SetFogColor(0.12f, 0.14f, 0.18f, 0.7f);
+	SetFogActive(true);
+	
+	///////////////////////////
+	// Connections
+	InteractConnectPropWithRope("LiftRope1" ,"crank_wood_1", "RopeArea_1", false, 1, 0.5, 1.5, false, 0);
+	InteractConnectPropWithRope("LiftRope2" ,"crank_wood_1", "RopeArea_2", false, 1, 0.5, 1.5, false, 0);
+	InteractConnectPropWithRope("LiftRope3" ,"crank_wood_1", "RopeArea_3", false, 1, 0.5, 1.5, false, 0);
+	InteractConnectPropWithRope("LiftRope4" ,"crank_wood_1", "RopeArea_4", false, 1, 0.5, 1.5, false, 0);
+}
+
+
+////////////////////////////
+// Run when entering map
+void OnEnter()
+{	
+	//----PRELOADING----//
+	PreloadSound("scare_male_terrified"); PreloadSound("scare_baby_cry"); PreloadSound("scare_wood_creak_mix"); PreloadSound("break_stairs"); 
+	PreloadSound("puzzle_place_jar"); PreloadSound("puzzle_add_chemical"); PreloadSound("general_fire_burning_low"); PreloadSound("general_thunder"); 
+	PreloadSound("04_big_feet"); PreloadSound("puzzle_boil"); PreloadSound("puzzle_gas"); PreloadSound("puzzle_boil_low"); 
+	PreloadSound("puzzle_acid"); PreloadSound("puzzle_acid_success"); PreloadSound("puzzle_acid_fail"); PreloadSound("04_hole_squeal"); 
+	PreloadSound("04_water_puff"); PreloadSound("react_breath"); PreloadSound("01_tiny2"); PreloadSound("spider_die"); 
+	PreloadSound("04_enter_clank"); PreloadSound("react_scare");
+
+	PreloadParticleSystem("ps_dust_falling_small_thin"); PreloadParticleSystem("ps_dust_break_stair"); PreloadParticleSystem("ps_acid_machine_bubble_large02");
+	PreloadParticleSystem("ps_acid_machine_bubble_end"); PreloadParticleSystem("ps_acid_machine_bubble_large"); PreloadParticleSystem("ps_acid_machine_bubble_small"); 
+	PreloadParticleSystem("waterlurker_walk_splash"); PreloadParticleSystem("ps_dust_falling_big_feet"); PreloadParticleSystem("ps_dust_falling_small_thin"); 
+	 
+	SetWheelStuckState("ValveIgnite", -1, false);
+	 
+	//----AUDIO----//
+	PlayMusic("amb_soft_mood.ogg", true, 1, 0.1f, 0, true);
+		
+	//---- TIMER INIT ----//
+	if(GetLocalVarInt("PlayIntro") == 0){
+		SetLocalVarInt("PlayIntro", 1);
+		
+		AutoSave();
+		
+		AddTimer("Clank_1", 0.25f, "TimerEnterClank");
+	} 
+	else AutoSave();
+}
+
+////////////////////////////
+// Run when leaving map
+void OnLeave()
+{
+
+}

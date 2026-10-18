@@ -1,0 +1,193 @@
+<LANGUAGE>
+	<!--
+	I have taken this file from the original Amnesia config folder and stripped much of the contents.
+	What remains are the unique categories and some examples of entries from each of them.
+	Feel free to remove, add or rename them, as long as they reflect what's required by the game/script.
+	As for the comments, you may remove them as you wish, or keep them. Up to you.
+
+	SYNTAX:
+	[br] 				- apply a line break
+	[new_page] 			- split text into a new page (for notes/diaries)
+	[voice file.ogg] 	- Play a voice file along with a note/diary with "file.ogg" as the sound file.
+	* 					- Start a line with * to apply special font effects (examples in credits).
+	-->
+
+	<RESOURCES>
+		<Directory Path="fonts/eng" />
+		<Directory Path="lang/eng" />
+	</RESOURCES>
+
+	<!-- Inventory -->
+
+	<CATEGORY Name="Inventory">
+		<Entry Name="ItemName_ChemicalContainer">Chemistry Pot</Entry>
+		<Entry Name="ItemDesc_ChemicalContainer">A pot to contain mixtures of all sorts.</Entry>
+	</CATEGORY>
+
+	<!-- Journal -->
+
+	<CATEGORY Name="Journal">
+
+		<!-- Notes -->
+
+		<Entry Name="Note_Historian1_Name">DIARY ENTRY</Entry>
+		<Entry Name="Note_Historian1_Text">Year is 1615.[br][br]Writing is local historian who is preparing for a trip to a village in Prussia.[br][br]He has heard stories of a castle in the region and its influence in the local culture and he would like to study it.</Entry>
+		<Entry Name="Note_Historian2_Name">DIARY ENTRY</Entry>
+		<Entry Name="Note_Historian2_Text">Year is 1615.[br][br]Writing is local historian who is collecting lore about the area. He mentions that "the castle" plays a big part in stories told.[br][br]The historian says that he is intrigued and will visit the castle the next day.</Entry>
+		<Entry Name="Note_Historian3_Name">DIARY ENTRY</Entry>
+		<Entry Name="Note_Historian3_Text">Year is 1615.[br][br]Writing is local historian who is currently visiting "the castle". He says that it has no inhabitants, but it appears that it exhibits signs of someone living inside of it for quite a while.[br][br]He writes that he'll be investigating it further for the next few days.</Entry>
+		<Entry Name="Note_Historian4_Name">DIARY ENTRY</Entry>
+		<Entry Name="Note_Historian4_Text">Year is 1615.[br][br]Writing is local historian who is currently investigating "the castle". He says he has found further evidence of some sort of human activity within the castle. He also mentions strange findings of ritualistic tools within it[br][br]He is considering leaving, but he is too intrigued and invested in finding out what is going on within "the castle".</Entry>
+		
+		<Entry Name="Note_Count1_Name">DIARY ENTRY</Entry>
+		<Entry Name="Note_Count1_Text">Year is 1337.[br][br]Writing is the count of the castle who talks about a disputed heritage within his family. One of his brothers is disputing his feudal lands and that includes the possession of the castle.[br][br]He is currently examining ways of settling down the dispute and is very annoyed at the situation.</Entry>
+		<Entry Name="Note_Count2_Name">DIARY ENTRY</Entry>
+		<Entry Name="Note_Count2_Text">Year is 1337.[br][br]Writing is the count of the castle who is in a deep dilemma about his disputed heritage. Other family members are pressuring him to give up ownership of the castle, but he is greatly reluctant, citing some sort of treasure deep within its walls that he is searching for.[br][br]He mentions that he is considering taking drastic measures to keep others away from the castle.</Entry>
+		
+		<Entry Name="Note_ArchivesRebuilding_Name">NOTE</Entry>
+		<Entry Name="Note_ArchivesRebuilding_Text">Year is 1333.[br][br]Writing is the count of the castle who is currently in the process of expanding and rebuilding the archives. He has expanded the area eastwards and is currently planning on building a cellar area for it, but complains of frequent spider infestations.</Entry>
+
+		<Entry Name="Note_LocalStories_Name">NOTE</Entry>
+		<Entry Name="Note_LocalStories_Text">Strange stories told about the castle from villagers. Talks about strange creates seen in the forest around the castle and one woman swears here she saw her dead cat running around.</Entry>
+		
+		<Entry Name="Note_LaboratoryAcid_Name">NOTE</Entry>
+		<Entry Name="Note_LaboratoryAcid_Text">Year is 1225.[br][br]Writing is the court alchemist who talks about a new recipe for a new type of acid. He says the ingredients are quite unstable, though, and that he is moving everything to the wine cellar to keep them safe there.</Entry>
+
+		<!-- Mementos -->
+
+		<Entry Name="Quest_QHollowNeedle_Name">Hollow Needle - Archives</Entry>
+		<Entry Name="Quest_QHollowNeedle_Text">To begin this adventure, search for a hollow needle in the Archives.</Entry>
+		<Entry Name="Quest_QLantern_Name">Illuminate - Archives</Entry>
+		<Entry Name="Quest_QLantern_Text">Search behind every book in the Archives to find a lantern.</Entry>
+		<Entry Name="Quest_QAcid_Name">Acid Pòtion - Wine Cellar</Entry>
+		<Entry Name="Quest_QAcid_Text">Create an acid potion from ingredients found in the Wine Cellar.</Entry>
+		<Entry Name="Quest_QAcidSpider_Name">Spider Web - Archives</Entry>
+		<Entry Name="Quest_QAcidSpider_Text">Use the acid potion on the Spider Web in the Archives.</Entry>
+
+		<!-- Diaries -->
+
+		<Entry Name="Diary_Test_Name1">Test Entry: Overture</Entry>
+		<Entry Name="Diary_Test_Name2">Test Entry: Requiem</Entry>
+		<Entry Name="Diary_Test_Text1">[voice player_react_guardian2.ogg][br]This is diary 1!!!![br][br]Nice nice![br][voice player_react_guardian2.ogg][br]this is the next paragraph tha the character speaks! Fun fun speaking![br][voice player_react_guardian2.ogg][br]Now for the final thing the character says...[br][br]Arghh.... I die.... diee.....DIE!</Entry>
+		<Entry Name="Diary_Test_Text2">This is diary 2!!!![br][br]last last!</Entry>
+	</CATEGORY>
+
+	<!-- Voice -->
+
+	<CATEGORY Name="Voice">
+		<Entry Name="CH02L15_Alexander_01">Is he safe? Well, it's for his own good.</Entry>
+		<Entry Name="CH02L15_Alexander_02">Soon it will be ready. Let there be enough time.</Entry>
+		<Entry Name="CH02L15_Alexander_03">He escaped? Where is he now?</Entry>
+	</CATEGORY>
+
+	<!-- Flashbacks -->
+
+	<CATEGORY Name="Flashbacks">
+		<Entry Name="CH01L00_DanielsMind01_01">Don't forget... some things mustn't be forgotten. The shadow hunting me... I must hurry.</Entry>
+		<Entry Name="CH01L00_DanielsMind02_01">My name is Daniel, I live in London at... at... Mayfair...</Entry>
+		<Entry Name="CH01L00_DanielsMind03_01">What have I done? This is crazy. Don't forget, don't forget. I must stop him. Focus!</Entry>
+		<Entry Name="CH01L00_DanielsMind04_01">My name is...is... I am Daniel.</Entry>
+	</CATEGORY>
+
+	<!-- Levels -->
+
+	<CATEGORY Name="Levels">
+		<Entry Name="WineCellar">Wine Cellar</Entry>
+		<Entry Name="WineCellarLab">Laboratory</Entry>
+		<Entry Name="Distillery">Refinery</Entry>
+		<Entry Name="Archives">Archives</Entry>
+		<Entry Name="ArchivesOld">Old Archives</Entry>
+		<Entry Name="ArchivesCellar">Cellar Archives</Entry>
+		<Entry Name="EntranceHall">Entrance Hall</Entry>
+		<Entry Name="CellarMaze">Archive Tunnels</Entry>
+		<Entry Name="BackHall">Back Hall</Entry>
+		<Entry Name="DanielsRoom">Guest Room</Entry>
+		<Entry Name="Study">Study</Entry>
+		<Entry Name="MachineRoom">Machine Room</Entry>
+		<Entry Name="Storage">Storage</Entry>
+		<Entry Name="PrisonNorth">Prison - Northern Block</Entry>
+		<Entry Name="PrisonSouth">Prison - Southern Block</Entry>
+		<Entry Name="ControlRoom">Control Room</Entry>
+		<Entry Name="Morgue">Morgue</Entry>
+		<Entry Name="Cistern">Cistern</Entry>
+		<Entry Name="CisternEntrance">Entrance to Cistern</Entry>
+		<Entry Name="Sewer">Sewer</Entry>
+		<Entry Name="Transept">Transept</Entry>
+		<Entry Name="Chancel">Chancel</Entry>
+		<Entry Name="ChoirEast">Choir - Main Hall</Entry>
+		<Entry Name="ChoirWest">Choir - Entrance</Entry>
+		<Entry Name="Nave">Nave</Entry>
+		<Entry Name="Cells">Cells</Entry>
+		<Entry Name="Elevator">Elevator</Entry>
+		<Entry Name="RainyHall">Rainy Hall</Entry>
+		<Entry Name="InnerSanctum">Inner Sanctum</Entry>
+		<Entry Name="ZimmermanFarm">Zimmermann Farm</Entry>
+		<Entry Name="OrbChamber">Orb Chamber</Entry>
+	</CATEGORY>
+	
+	<!-- Locked Doors -->
+	
+	<CATEGORY Name="Locked">
+		<Entry Name="FinalDoorLocked">The door is locked. You'll need a key or a lockpick.</Entry>
+		
+		<Entry Name="FlashbackGuide">The Player now hears ghostly voices that tell of past events.[br]Voices are heard as if they where still part of environment.</Entry>
+	</CATEGORY>
+	
+	<!-- Miscellaneous -->
+	
+	<CATEGORY Name="MiscellaneousMessages">
+		<Entry Name="FlashbackGuide">The Player now hears ghostly voices that tell of past events.[br]Voices are heard as if they where still part of environment.</Entry>
+	</CATEGORY>
+
+	<!-- Hints -->
+
+	<CATEGORY Name="Hints">
+		<Entry Name="DeathGrunt_12_Storage_02">Do not venture too far...</Entry>
+		<Entry Name="DeathGrunt_12_Storage_01">Darkness can act as cover...</Entry>
+		<Entry Name="DeathGrunt_12_Storage_03">Move carefully...</Entry>
+	</CATEGORY>
+
+	<!-- Emotion Stone -->
+
+	<CATEGORY Name="EmotionStone">
+		<Entry Name="Alexander01">One day I will return. If it wasn't for the thought of you, my love, I wouldn't be able to go on. When I find myself doing terrible things, I take comfort in you. [br][br]As long as I am able to think of you and long for a life together, I know I'm better than the others. I weep for them, they lust for power without restraint, where I only crave fair judgment and a safe return.</Entry>
+		<Entry Name="Alexander02">When will it be my turn? Have I not shown restraint? My patience spans centuries. From where I came, mankind is not even wasted a breath, yet I bow to you. [br][br]I have done so much for you and I have gained nothing in return. Agrippa, I trusted you. It was I who in all fairness should have entered that gate.</Entry>
+		<Entry Name="Alexander03">I fear for Daniel, for he is reckless. He is tainted by the approaching shadow and will not be able to pass the gate. Will he be able to accept this in the end? [br][br]My love, I've seen evil in him. How am I to trust him with the truth? What cruel irony that I have to do unto him what Agrippa did unto me.</Entry>
+		<Entry Name="Alexander04">In court, the order of the Black Eagle spew their politics at each other while I sit quietly in place, willfully forgotten. Once in a while someone will notice me and lose themselves in a silent cower before regaining their senses.[br][br]They all know I am the one and the same Alexander who helped their fathers and grandfathers to found this great Order. I've seen them take their fathers' places, and they too will grow old and pass away. While I remain the same, aged not by time, but by anguish.</Entry>
+		<Entry Name="Alexander05">Is it you, my love, I miss the most, or is it perhaps myself? I know what I have become, I am not blind. I am a monster to them, a demonic sultan perched on a dark mountain top. There is little I can do to redeem myself.[br] [br]The Black Eagle fears me and after Napoleon's defeat it is only a matter of time before they will demand my head on a platter. I must remove myself from this land. This time it must work. If I can't return home now, I shall perish.</Entry>
+	</CATEGORY>
+
+	<!-- Loading Text -->
+
+	<CATEGORY Name="LoadingText">
+		<Entry Name="Ch01_Beginning01">The door slammed shut behind him and he knew he would never again see the old tailor at Berkeley Square. Another lone soul in London - seemed appropriate somehow.</Entry>
+		<Entry Name="Ch01_Beginning02">The other children cheered him on. His name voiced in a steadily rising pace, urging him to do it. "Am I really doing this?", the young boy thought and struck his victim with a rock.</Entry>
+		<Entry Name="Ch01_Beginning03">He fell to the kitchen floor. Tears were beginning to well in his eyes as he received the first kick in his stomach. Hazel remained hidden, in fear she too would be punished.</Entry>
+	</CATEGORY>
+
+	<!-- Pre Menu -->
+
+	<CATEGORY Name="PreMenu">
+		<Entry Name="WelcomeMessage01">Welcome to Amnesia: The Dark Descent! [br][br]What follows is a couple of quick messages on how to get the best possible experience.</Entry>
+		<Entry Name="WelcomeMessage02">Amnesia should not be played to win. [br][br]Instead, focus on immersing yourself in the game's world and story.</Entry>
+		<Entry Name="WelcomeMessage03">Do not worry about when and how to save during gameplay, the game will take care of that for you. [br][br]When you want to leave the game, just choose "Save and Exit". You can then use "Continue" to return to where you left off next time you start up the game.</Entry>
+		<Entry Name="WelcomeMessage04">The world of Amnesia is a dangerous place and you are extremely vulnerable. [br][br]Do not try to fight the enemies encountered. Instead, use your wits. Hide, or even run if necessary.</Entry>
+		<Entry Name="WelcomeMessage05">The interplay between light and dark is very important to the game and because of this it is vital to set up the gamma correctly. Use the slider control below to do so. Adjust it until the square at the right is barely visible. [br][br]Also make sure to play in a dark room and wear headphones for the best effect.</Entry>
+		<Entry Name="WelcomeMessage06">That is all. Hope you enjoy immersing yourself in the world of Amnesia.[br][br][br]- Frictional Games</Entry>
+	</CATEGORY>
+
+	<!-- Credits -->
+
+	<CATEGORY Name="Ending">
+		<Entry Name="MainCredits">- A FRICTIONAL GAMES PRODUCTION -[br][br][br]- AMNESIA: THE DARK DESCENT -[br][br][br]*Frictional Games Are:[br]Thomas Grip[br]Marcus Johansson[br]Luis A. Rodero Morales[br]Marc Nicander[br]Jens Nilsson[br][br][br][br][br][br]*CREDITS[br][br]*Design[br]Thomas Grip[br]Jens Nilsson[br][br]*Programming[br]Thomas Grip[br]Luis A. Rodero Morales[br][br]*Sound Engineering[br]Jens Nilsson[br][br]*Graphics[br]Marcus Johansson[br]Marc Nicander[br][br]*Level Editing[br]Marcus Johansson[br]Marc Nicander[br]Jens Nilsson[br][br]*Level Scripting[br]Thomas Grip[br]Luis A. Rodero Morales[br]Jens Nilsson[br][br]*Mac/Linux Porting[br]Edward Rudd[br][br]*Additional Graphics[br]Abyss Lights Studios[br]Rasmus Gunnarsson[br]Magnus Hertzberg[br]Nicodemus Mattisson[br]Jonas Steinick Berlin[br]Olof Strand[br]Sebastian Vasselbring[br][br]*Music[br]Mikko Tarmia[br][br]*Additional Sound Effects[br]Tapio Liukkonen - Kaamos Sound[br][br]*Writing[br]Mikael Hedberg[br][br]*Story[br]Thomas Grip[br]Mikael Hedberg[br][br]*Concept Art[br]Rasmus Gunnarsson[br]Jonas Steinick Berlin[br][br]*Voice Direction &amp; Casting[br]Lani Minella - AudioGodz[br][br]*Voice Talent[br]Richard Topping  as  Daniel[br]Sam Mowry  as  Alexander[br]Bill Corkery  as  Agrippa[br]Eric Newsome  as  Herbert[br]Lani Minella  as  Girl &amp; Mother[br]Marc Biagi  as  Innocent Man[br]Dave Rivas  as  Man In Morgue[br]Dan Zullo  as  Wilhelm &amp; Thugs[br][br]*Beta Testing[br]Anton Adamse[br]Antonio Luis Tirado Chávez[br]Agustín Cordes[br]Cedric Guillemet[br]Christopher Bates[br]Rasmus Gunnarsson[br]David Gustavsson[br]Mikael Hedberg[br]Magnus Hertzberg[br]Martin Jonsson[br]Tom Jubert[br]Aleksey Luchin[br]Kristoffer Lövgren[br]Javier Mairena[br]Nicodemus Mattisson[br]Emil Meiton[br]David Rosen[br]Michaël Samyn[br]Jonas Steinick Berlin[br]Erik Svedäng[br][br]*Special Thanks To[br]Near and dear for support and patience[br]Wolfire Games[br]Julio Jerez - Newton Game Dynamics[br]Andreas Jonsson - Angel Code[br]DevIL Image Library[br]TinyXML[br]LibSDL</Entry>
+	</CATEGORY>
+
+	<!-- Basic Phrases -->
+
+	<CATEGORY Name="BasicPhrases">
+		<Entry Name="UseItemOrCombineItem01">Better keep this for later.</Entry>
+		<Entry Name="UseItemOrCombineItem02">Can't do this right now.</Entry>
+		<Entry Name="UseItemOrCombineItem03">It is not loose enough, no need to waste more time on it.</Entry>
+	</CATEGORY>
+
+</LANGUAGE>
