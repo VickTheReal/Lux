@@ -1075,7 +1075,7 @@ void cLuxInputHandler::UpdateGamePlayerInput()
 	if(mpInput->WasTriggerd(eLuxAction_Ignite))		mpPlayer->DoAction(eLuxPlayerAction_Ignite, false);
 
 	//Holster
-	if(mpInput->BecameTriggerd(eLuxAction_Holster))	
+	/*if (mpInput->BecameTriggerd(eLuxAction_Holster))
 	{
 		if(gpBase->mpConfigHandler->mbLoadDebugMenu)
 		{
@@ -1083,9 +1083,10 @@ void cLuxInputHandler::UpdateGamePlayerInput()
 			mpPlayer->LowerSanity(3, true);//1.0f / 60.0f);
 			mpPlayer->GiveDamage(10, 10, eLuxDamageType_BloodSplat, true, true);
 		}	
-	}
-		//mpPlayer->DoAction(eLuxPlayerAction_Holster ,true);
-	//if(mpInput->WasTriggerd(eLuxAction_Holster))	mpPlayer->DoAction(eLuxPlayerAction_Holster, false);
+	}*/
+
+	if(mpInput->BecameTriggerd(eLuxAction_Holster))	mpPlayer->DoAction(eLuxPlayerAction_Holster, true);
+	if(mpInput->WasTriggerd(eLuxAction_Holster))	mpPlayer->DoAction(eLuxPlayerAction_Holster, false);
 	
 	//Lantern
 	if(mpInput->BecameTriggerd(eLuxAction_Lantern))	mpPlayer->DoAction(eLuxPlayerAction_Lantern ,true);

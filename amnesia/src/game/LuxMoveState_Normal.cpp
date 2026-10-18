@@ -704,9 +704,12 @@ void cLuxMoveState_Normal::UpdateHeadBob(float afTimeStep)
 
 bool cLuxMoveState_Normal::UpdateLedgeCheck(float afTimeStep)
 {
+
+	// Edited - completely restored the climbing mechanic
+	
 	//////////////////////////////
 	// Skipping this for now! It messes up puzzles too much!
-	return false;
+	//return false;
 
 	iCharacterBody *pCharBody = mpPlayer->GetCharacterBody();
 

@@ -19,6 +19,8 @@
 
 #include "LuxSavedGameTypes.h"
 
+#include "LuxCompletionCountHandler.h"
+
 #include "LuxMap.h"
 #include "LuxPlayer.h"
 #include "LuxPlayerHelpers.h"
@@ -881,6 +883,8 @@ void cLuxInventory_SaveData::ToInventory(cLuxMap *apMap, cLuxInventory *apInvent
 		apInventory->SetEquippedHandItem(NULL);
 	}
 
+	// Items re-added on load must not re-increment completion
+	gpBase->mpCompletionCountHandler->SetSuppressIncrease(true);
 
 	///////////////////////////
 	//Items
@@ -894,6 +898,9 @@ void cLuxInventory_SaveData::ToInventory(cLuxMap *apMap, cLuxInventory *apInvent
 		pItem->SetGameDescEntry(saveItem.msGameDescEntry);
 		pItem->SetCount(saveItem.mlCount);
 	}
+
+	// Items re-added on load must not re-increment completion
+	gpBase->mpCompletionCountHandler->SetSuppressIncrease(false);
 
 	///////////////////////////
 	//Combine callbacks

@@ -390,9 +390,11 @@ bool cLuxPlayerState_Ladder::OnJump(bool abPressed)
 
 //-----------------------------------------------------------------------
 
+// Edited - restored old crouch-on-ladder behaviour
+
 bool cLuxPlayerState_Ladder::OnCrouch(bool abPressed)
 {
-	return false;
+	return true; // Edited - was false
 }
 
 //-----------------------------------------------------------------------

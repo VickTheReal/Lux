@@ -48,6 +48,8 @@ cLuxHandObject_Melee::~cLuxHandObject_Melee()
 
 //-----------------------------------------------------------------------
 
+// Edited - temporarily reactivated
+
 void cLuxHandObject_Melee::RenderSolid(cRendererCallbackFunctions* apFunctions)
 {
 	/*cCamera *pCam = gpBase->mpPlayer->GetCamera();
@@ -55,10 +57,10 @@ void cLuxHandObject_Melee::RenderSolid(cRendererCallbackFunctions* apFunctions)
 	cVector3f vRotation(pCam->GetPitch(), pCam->GetYaw(), pCam->GetRoll());
 	cMatrixf mtxHands = cMath::MatrixRotate(vRotation, eEulerRotationOrder_XYZ);
 	mtxHands.SetTranslation(pCam->GetPosition());
-	
+
 	cBoundingVolume shapeBV =  mpCollideShape->GetBoundingVolume();
 	shapeBV.SetTransform(cMath::MatrixMul(mtxHands, shapeBV.GetTransform()));
-	
+
 	apFunctions->GetLowLevelGfx()->DrawBoxMinMax(shapeBV.GetMin(), shapeBV.GetMax(), cColor(1,1));*/
 }
 
@@ -96,7 +98,7 @@ void cLuxHandObject_Melee::LoadImplementedVars(cXmlElement *apVarsElem)
 	mfAttackMaxDamage = apVarsElem->GetAttributeFloat("AttackMaxDamage", 0);
 	mfAttackHitSpeed = apVarsElem->GetAttributeFloat("AttackHitSpeed", 0);
 
-	mlAttackStrength = apVarsElem->GetAttributeInt("AttackHitSpeed", 0);
+	mlAttackStrength = apVarsElem->GetAttributeInt("AttackHitStrength", 0);
 }
 
 //-----------------------------------------------------------------------

@@ -920,11 +920,13 @@ void cLuxPlayer::AddSanity(float afX, bool abShowEffect)
 			SetHealth(0.f);
 		}
 	}
+	
+	// Deactivated the sanity flash from gains
 
-	if(afX >0 && abShowEffect)
+	/*if (afX >0 && abShowEffect)
 	{
 		gpBase->mpEffectHandler->GetSanityGainFlash()->Start();
-	}
+	}*/
 }
 
 void cLuxPlayer::AddLampOil(float afX)

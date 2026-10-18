@@ -322,6 +322,9 @@ private:
 	void UpdateInsaneEffects(float afTimeStep);
 	void UpdateCheckEnemySeen(float afTimeStep);
 	void UpdateHit(float afTimeStep);
+
+	void StartPostHitEffect();
+	void UpdatePostHitEffect(float afTimeStep);
 	
 	void UpdateInsanityVisuals(float afTimeStep);
 	void UpdateEnemySeenEffect(float afTimeStep);
@@ -331,6 +334,15 @@ private:
 	float mfHitAlpha;
 	bool mbHitActive;
 	float mfSanityLostCount;
+
+	bool  mbPostHitActive;
+	int   mlPostHitPhase;
+	float mfPostHitTimer;
+
+	float mfPostHitFadeInTime;
+	float mfPostHitHoldTime;
+	float mfPostHitFadeOutTime;
+	float mfPostHitTrailAmount;
 
 	float mfAtLowSanityCount;
 
@@ -342,7 +354,7 @@ private:
 	float mfCheckEnemySeenCount;
 
 	bool mbSanityEffectUpdated;
-
+	
 	float mfT;
 	float mfInsaneWaveAlpha;
 
@@ -377,6 +389,11 @@ private:
 	float mfCheckNearEnemyInterval;
 	float mfNearEnemyDecrease;
 	float mfNearCritterDecrease;
+
+	float mfEnemySeenTrailAmount;
+	float mfEnemySeenFOVPulse;
+	float mfEnemySeenPulseFreq;
+	float mfEnemySeenFadeOutSpeed;
 };
 
 //----------------------------------------------

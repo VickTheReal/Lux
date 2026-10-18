@@ -39,9 +39,12 @@ public:
 	void Reset();
 	void OnDraw(float afFrameTime);
 
-	void OnMapExit(cLuxMap *apMap);
+	void OnMapLeave(cLuxMap *apMap);
 
 	void ShowCompletionIncrease(float afPrevius, float afNew, float afDelay);
+
+	void SetSuppressIncrease(bool abX) { mbSuppressIncrease = abX; }
+	bool GetSuppressIncrease() { return mbSuppressIncrease; }
 
 public:
 	int mlQuestCompletionValue;
@@ -65,6 +68,8 @@ private:
 	float mfNewAmount;
 	float mfDisplayedAmount;
 	float mfDisableDelay;
+
+	bool mbSuppressIncrease;
 };
 
 //----------------------------------------------

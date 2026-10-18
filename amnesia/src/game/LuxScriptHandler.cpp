@@ -1741,11 +1741,13 @@ void __stdcall cLuxScriptHandler::AddQuest(string& asName, string& asNameAndText
 		
 		gpBase->mpHintHandler->Add("QuestAdded", kTranslate("Hints", "QuestAdded"), 0);
 		
-		gpBase->mpMessageHandler->StarQuestAddedMessage();
+		//gpBase->mpMessageHandler->StarQuestAddedMessage(); // Edited - restored old behaviour instead
 		
-		//tWString sMess = kTranslate("Quest", "QuestAdded") + _W("\n") + kTranslate("Journal", sTextEntry);
-		//gpBase->mpMessageHandler->SetMessage(sMess, 0);	
-		//gpBase->mpHelpFuncs->PlayGuiSoundData("quest_added", eSoundEntryType_Gui);
+		// Edited - restored old quest added message
+
+		tWString sMess = kTranslate("Quest", "QuestAdded") + _W("\n") + kTranslate("Journal", sTextEntry);
+		gpBase->mpMessageHandler->SetMessage(sMess, 0);	
+		gpBase->mpHelpFuncs->PlayGuiSoundData("quest_added", eSoundEntryType_Gui);
 	}
 }
 
@@ -1753,16 +1755,18 @@ void __stdcall cLuxScriptHandler::AddQuest(string& asName, string& asNameAndText
 
 void __stdcall cLuxScriptHandler::CompleteQuest(string& asName, string& asNameAndTextEntry)
 {
-	tString sTextEntry = "Quest_"+asNameAndTextEntry+"_Text";
+	tString sTextEntry = "Quest_"+asNameAndTextEntry+"_Name";
 
 	gpBase->mpJournal->AddQuestNote(asName, asNameAndTextEntry);
 	if(gpBase->mpJournal->DisableQuestNote(asName))
 	{
 		gpBase->mpProgressLogHandler->AddLog(eLuxProgressLogLevel_High, "Completed Quest "+ asName);
 
-		//tWString sMess = kTranslate("Quest", "QuestCompleted") + _W("\n") + kTranslate("Journal", sTextEntry);
-		//gpBase->mpMessageHandler->SetMessage(sMess, 0);
-		//gpBase->mpHelpFuncs->PlayGuiSoundData("quest_completed", eSoundEntryType_Gui);
+		// Edited - restored old quest completed message
+
+		tWString sMess = kTranslate("Quest", "QuestCompleted") + _W("\n") + kTranslate("Journal", sTextEntry);
+		gpBase->mpMessageHandler->SetMessage(sMess, 0);
+		gpBase->mpHelpFuncs->PlayGuiSoundData("quest_completed", eSoundEntryType_Gui);
 		
 		cLuxMap *pMap = gpBase->mpMapHandler->GetCurrentMap();
 		if(pMap) pMap->AddCompletionAmount(gpBase->mpCompletionCountHandler->mlQuestCompletionValue, 6.0f);

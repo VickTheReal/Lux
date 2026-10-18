@@ -1161,6 +1161,16 @@ cLuxPlayerSanity::cLuxPlayerSanity(cLuxPlayer *apPlayer) : iLuxPlayerHelper(apPl
 	mfNearEnemyDecrease = gpBase->mpGameCfg->GetFloat("Player_Sanity","NearEnemyDecrease",0);
 	mfNearCritterDecrease = gpBase->mpGameCfg->GetFloat("Player_Sanity","NearCritterDecrease",0);
 
+	mfPostHitFadeInTime = gpBase->mpGameCfg->GetFloat("Player_Sanity", "HitPostFadeInTime", 0.1f);
+	mfPostHitHoldTime = gpBase->mpGameCfg->GetFloat("Player_Sanity", "HitPostHoldTime", 2.0f);
+	mfPostHitFadeOutTime = gpBase->mpGameCfg->GetFloat("Player_Sanity", "HitPostFadeOutTime", 0.2f);
+	mfPostHitTrailAmount = gpBase->mpGameCfg->GetFloat("Player_Sanity", "HitPostTrailAmount", 1.0f);
+
+	mfEnemySeenTrailAmount = gpBase->mpGameCfg->GetFloat("Player_Sanity", "EnemySeenTrailAmount", 0.7f);
+	mfEnemySeenFOVPulse = gpBase->mpGameCfg->GetFloat("Player_Sanity", "EnemySeenFOVPulse", 0.03f);
+	mfEnemySeenPulseFreq = gpBase->mpGameCfg->GetFloat("Player_Sanity", "EnemySeenPulseFreq", 4.0f);
+	mfEnemySeenFadeOutSpeed = gpBase->mpGameCfg->GetFloat("Player_Sanity", "EnemySeenFadeOutSpeed", 1.5f);
+
 	Reset();
 }
 
@@ -1192,10 +1202,15 @@ void cLuxPlayerSanity::Reset()
 	mbEnemyIsSeen = false;
 
 	mbSanityEffectUpdated = false;
-
+	
 	mfAtLowSanityCount =0;
 
 	mfShowHintTimer =0;
+
+	// Post-hit effect
+	mbPostHitActive = false;
+	mlPostHitPhase = 0;
+	mfPostHitTimer = 0.0f;
 }
 
 //-----------------------------------------------------------------------
@@ -1203,6 +1218,11 @@ void cLuxPlayerSanity::Reset()
 void cLuxPlayerSanity::StartHit()
 {
 	mbHitActive = true;
+
+	// A fresh hit cancels any in-flight post-hit effect.
+	mbPostHitActive = false;
+	mlPostHitPhase = 0;
+	mfPostHitTimer = 0.0f;
 
 	gpBase->mpHelpFuncs->PlayGuiSoundData("sanity_damage", eSoundEntryType_Gui);
 }
@@ -1245,6 +1265,7 @@ void cLuxPlayerSanity::Update(float afTimeStep)
 	UpdateCheckEnemySeen(afTimeStep);
 	UpdateEnemySeenEffect(afTimeStep);
 	UpdateHit(afTimeStep);
+	UpdatePostHitEffect(afTimeStep);
 	UpdateInsaneEffects(afTimeStep);
 }
 
@@ -1301,7 +1322,7 @@ void cLuxPlayerSanity::UpdateInsaneEffects(float afTimeStep)
 {
 	if(mbHitIsUpdated) return;
 
-	if(mbSanityEffectUpdated)
+	if (mbSanityEffectUpdated && mbPostHitActive == false && mfSeenEnemyCount <= 0.0f)
 	{
 		gpBase->mpEffectHandler->GetImageTrail()->FadeTo(0, 1);
 		mpPlayer->FadeAspectMulTo(1, 1);
@@ -1492,49 +1513,129 @@ void cLuxPlayerSanity::UpdateHit(float afTimeStep)
 		if(mfHitAlpha < 0) mfHitAlpha =0;
 	}
 
-	gpBase->mpEffectHandler->GetImageTrail()->FadeTo(mfHitAlpha * 0.9f, 100);
+	gpBase->mpEffectHandler->GetImageTrail()->FadeTo(mfHitAlpha * 2.0f, 100);
 	mpPlayer->FadeAspectMulTo(1 - mfHitAlpha * mfHitZoomInAspectMul, 100);
 	mpPlayer->FadeFOVMulTo(1 - mfHitAlpha * mfHitZoomInFOVMul, 100);
+
+	mbSanityEffectUpdated = true;
+
+	// Start post-hit after FOV is normal
+	if (mfHitAlpha <= 0.0f && mbHitActive == false && mbPostHitActive == false)
+	{
+		StartPostHitEffect();
+	}
+}
+
+//-----------------------------------------------------------------------
+
+void cLuxPlayerSanity::StartPostHitEffect() // Post-sanity hit effect
+{
+	mbPostHitActive = true;
+	mlPostHitPhase = 0;
+	mfPostHitTimer = mfPostHitFadeInTime;
+
+	gpBase->mpHelpFuncs->PlayGuiSoundData("sanity_heartbeat", eSoundEntryType_Gui);
+
+	float fFadeInSpeed = mfPostHitTrailAmount / mfPostHitFadeInTime;
+	gpBase->mpEffectHandler->GetImageTrail()->FadeTo(mfPostHitTrailAmount, fFadeInSpeed);
+}
+
+//-----------------------------------------------------------------------
+
+void cLuxPlayerSanity::UpdatePostHitEffect(float afTimeStep) // More post-sanity hit effect
+{
+	if (mbPostHitActive == false) return;
+
+	// Countdown
+	mfPostHitTimer -= afTimeStep;
+
+	if (mlPostHitPhase == 0)
+	{
+		// Fade-in finished; hold
+		if (mfPostHitTimer <= 0.0f)
+		{
+			mlPostHitPhase = 1;
+			mfPostHitTimer = mfPostHitHoldTime;
+		}
+	}
+	else if (mlPostHitPhase == 1)
+	{
+		// Hold finished; fade out
+		if (mfPostHitTimer <= 0.0f)
+		{
+			mlPostHitPhase = 2;
+			mfPostHitTimer = mfPostHitFadeOutTime;
+
+			float fFadeOutSpeed = mfPostHitTrailAmount / mfPostHitFadeOutTime;
+			gpBase->mpEffectHandler->GetImageTrail()->FadeTo(0.0f, fFadeOutSpeed);
+		}
+	}
+	else if (mlPostHitPhase == 2)
+	{
+		// Fade-out finished; done
+		if (mfPostHitTimer <= 0.0f)
+		{
+			mbPostHitActive = false;
+		}
+	}
+}
+
+//-----------------------------------------------------------------------
+
+//-----------------------------------------------------------------------
+
+//-----------------------------------------------------------------------
+
+void cLuxPlayerSanity::UpdateEnemySeenEffect(float afTimeStep)
+{
+	/////////////////////////////////////////
+	// Update the "seen" ramp
+	if (mbEnemyIsSeen)
+	{
+		if (mfSeenEnemyCount < 1.0f)
+		{
+			mfSeenEnemyCount += afTimeStep * 0.3f;
+			if (mfSeenEnemyCount > 1.0f)
+			{
+				mfSeenEnemyCount = 1.0f;
+				gpBase->mpHintHandler->Add("EnemySeen", kTranslate("Hints", "EnemySeen"), 0);
+			}
+		}
+	}
+	else
+	{
+		if (mfSeenEnemyCount > 0.0f)
+		{
+			mfSeenEnemyCount -= afTimeStep * mfEnemySeenFadeOutSpeed;
+			if (mfSeenEnemyCount < 0.0f) mfSeenEnemyCount = 0.0f;
+		}
+	}
+
+	if (mfSeenEnemyCount <= 0.0f)
+		return;
+
+	/////////////////////////////////////////
+	// Effect is on (or easing out)
+	gpBase->mpEffectHandler->GetRadialBlur()->SetBlurStartDist(0.2f);
+	gpBase->mpEffectHandler->GetRadialBlur()->FadeTo(0.12f * mfSeenEnemyCount, 10.0f);
+
+	if (mbPostHitActive == false)
+		gpBase->mpEffectHandler->GetImageTrail()->FadeTo(mfSeenEnemyCount * mfEnemySeenTrailAmount, 10.0f);
+
+	float fPulse = (sin(mfT * mfEnemySeenPulseFreq) + 1.0f) * 0.5f;
+	float fFOVGoal = 1.0f - mfSeenEnemyCount * mfEnemySeenFOVPulse * fPulse;
+	mpPlayer->FadeFOVMulTo(fFOVGoal, 50.0f);
 
 	mbSanityEffectUpdated = true;
 }
 
 //-----------------------------------------------------------------------
 
-void cLuxPlayerSanity::UpdateEnemySeenEffect(float afTimeStep)
-{
-	if(mbEnemyIsSeen)
-	{
-		if(mfSeenEnemyCount <1)
-		{
-			mfSeenEnemyCount += afTimeStep * 0.3f;
-			if(mfSeenEnemyCount>1)
-			{
-				mfSeenEnemyCount =1;
-				gpBase->mpHintHandler->Add("EnemySeen", kTranslate("Hints", "EnemySeen"), 0);
-			}
-		}
-		
-		float fPulse = 0.5f + (sin(mfT*2.5f)*0.5f + 0.5f)*0.5f;
-		
-		gpBase->mpEffectHandler->GetRadialBlur()->SetBlurStartDist(0.2f);
-		gpBase->mpEffectHandler->GetRadialBlur()->FadeTo(0.12f * mfSeenEnemyCount*fPulse, 10.0f);
-	}
-	else
-	{
-		if(mfSeenEnemyCount > 0)
-		{
-			mfSeenEnemyCount -= afTimeStep * 0.15f;
-			if(mfSeenEnemyCount<0)mfSeenEnemyCount =0;
-		}
-	}
-}
-
-//-----------------------------------------------------------------------
+// Restored old sanity effects whilst in darkness
 
 void cLuxPlayerSanity::UpdateLosingSanity(float afTimeStep)
 {
-	if(mfSanityLostCount <= 0)
+	/*if (mfSanityLostCount <= 0)
 	{
 		mfSanityDrainCount = 0;
 		mfSanityHeartbeatCount =0;
@@ -1562,7 +1663,9 @@ void cLuxPlayerSanity::UpdateLosingSanity(float afTimeStep)
 		
 		float fVol = (1.0f - fNormalizedSanity*0.5f) * mfSanityDrainVolume;
 
-		if(mpPlayer->IsDead()==false)
+		// Edited - removed occasional heartbeat in darkness
+
+		if (mpPlayer->IsDead() == false)
 			gpBase->mpHelpFuncs->PlayGuiSoundData("sanity_heartbeat", eSoundEntryType_Gui, fVol);
 	}
 	
@@ -1570,17 +1673,20 @@ void cLuxPlayerSanity::UpdateLosingSanity(float afTimeStep)
 	if(mfSanityDrainCount >= 1)
 	{
 		mfSanityDrainCount =0;
+
+		// Edited - removed crackling sound in darkness
+
 		tString sSoundFile="";
-		if(fSanity > 75)
+		if (fSanity > 75)
 			sSoundFile = "sanity_drain_low";
 		else if(fSanity > 50)
 			sSoundFile = "sanity_drain_med"; 
 		else
 			sSoundFile = "sanity_drain_high";
 		
-		if(mpPlayer->IsDead()==false)
+		if (mpPlayer->IsDead() == false)
 			gpBase->mpHelpFuncs->PlayGuiSoundData(sSoundFile, eSoundEntryType_Gui, mfSanityDrainVolume);
-	}
+	}*/
 }
 
 //-----------------------------------------------------------------------
@@ -2915,16 +3021,18 @@ void cLuxPlayerInDarkness::Update(float afTimeStep)
 	// Light
     if(fExtLightLevel > mfMinDarknessLightLevel)
 	{
+		//	Edited - restored loop sound
+
 		////////////////////////////
 		//Turn off loop sound
-		/*if(mpLoopSound)
+		if(mpLoopSound)
 		{
 			if(mfLoopSoundCount <= 0)
 			{
 				mpLoopSound->FadeOut(mfLoopSoundFadeOutSpeed);
 				mpLoopSound = NULL;
 			}
-		}*/
+		}
         
 		mfLoopSoundCount-= afTimeStep;
 		if(mfLoopSoundCount <= 0) mfLoopSoundCount = 0;
@@ -2959,17 +3067,19 @@ void cLuxPlayerInDarkness::Update(float afTimeStep)
 				mfShowHintTimer -= afTimeStep;
 			}
 		}
-				
+		
+		//	Restored loop sound below
+
 		////////////////////////////
 		//Check if sound should be played
-		/*if(mpLoopSound == NULL)
+		if(mpLoopSound == NULL)
 		{
 			if(mfLoopSoundCount >= mfLoopSoundStartupTime)
 			{
 				mpLoopSound = mpSoundHandler->PlayGuiStream(msLoopSoundFile,true,mfLoopSoundVolume);
 				if(mpLoopSound) mpLoopSound->FadeIn(1.0f, mfLoopSoundFadeInSpeed);
 			}
-		}*/
+		}
 
 		mfLoopSoundCount+= afTimeStep;
 		if(mfLoopSoundCount >= mfLoopSoundStartupTime) mfLoopSoundCount = mfLoopSoundStartupTime;

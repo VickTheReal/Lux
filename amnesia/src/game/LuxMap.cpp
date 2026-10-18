@@ -1100,6 +1100,8 @@ cLuxEventTimer* cLuxMap::GetTimer(const tString& asName)
 
 void cLuxMap::AddCompletionAmount(int alAmount, float afDelay)
 {
+	if (gpBase->mpCompletionCountHandler->GetSuppressIncrease()) return;
+
 	float fPrevious = mlTotalCompletionAmount==0 ? 0 : (float)mlCurrentCompletionAmount/(float)mlTotalCompletionAmount;
 	mlCurrentCompletionAmount += alAmount;
 	float fNew = mlTotalCompletionAmount==0 ? 0 : (float)mlCurrentCompletionAmount/(float)mlTotalCompletionAmount;

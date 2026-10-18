@@ -37,6 +37,7 @@ cLuxCompletionCountHandler::cLuxCompletionCountHandler() : iLuxUpdateable("LuxCo
 	mlChestCompletionValue = gpBase->mpGameCfg->GetInt("Quest", "ChestCompletionValue",0);
 
 	mpFont = NULL;
+	mbSuppressIncrease = false;
 }
 
 //-----------------------------------------------------------------------
@@ -74,14 +75,13 @@ void cLuxCompletionCountHandler::Reset()
 
 	mfNewAmount =0;
 	mfDisplayedAmount =0;
+	mfDisableDelay = 0;
 }
 
 //-----------------------------------------------------------------------
 
 void cLuxCompletionCountHandler::Update(float afTimeStep)
 {
-	return;
-
 	/////////////////////
 	//Decrease alpha
 	if(mbActive==false)
@@ -108,7 +108,8 @@ void cLuxCompletionCountHandler::Update(float afTimeStep)
 	{
 		if(mfDisplayedAmount < mfNewAmount)
 		{
-			float fDistance = 0;//(mfNewAmount - mfDisplayedAmount);
+			//float fDistance = 0;
+			float fDistance = (mfNewAmount - mfDisplayedAmount);
 			mfDisplayedAmount += (fDistance+0.001f) * 30 * afTimeStep;
 			if(mfDisplayedAmount > mfNewAmount)mfDisplayedAmount = mfNewAmount;
 		}
@@ -127,19 +128,20 @@ void cLuxCompletionCountHandler::Update(float afTimeStep)
 
 void cLuxCompletionCountHandler::OnDraw(float afFrameTime)
 {
-	return;
-	
+	if (mfAlpha <= 0) return;
+	if (mpFont == NULL) return;
+
 	float fPrecent = mfDisplayedAmount * 100;
-	gpBase->mpGameHudSet->DrawFont(mpFont, cVector3f(400,20,1),21,cColor(1,mfAlpha), eFontAlign_Right,eGuiMaterial_FontNormal,
-									_W("%.1f%%"), fPrecent);
-	gpBase->mpGameHudSet->DrawFont(mpFont, cVector3f(400,20,1),21,cColor(1,mfAlpha), eFontAlign_Left,eGuiMaterial_FontNormal,
-									_W(" %ls"), kTranslate("CompletionCount", "Completed").c_str());
-	
+	gpBase->mpGameHudSet->DrawFont(mpFont, cVector3f(400, 20, 1), 21, cColor(1, mfAlpha), eFontAlign_Right, eGuiMaterial_FontNormal,
+		_W("%.1f%%"), fPrecent);
+	gpBase->mpGameHudSet->DrawFont(mpFont, cVector3f(400, 20, 1), 21, cColor(1, mfAlpha), eFontAlign_Left, eGuiMaterial_FontNormal,
+		_W(" %ls"), kTranslate("CompletionCount", "Completed").c_str());
+
 }
 
 //-----------------------------------------------------------------------
 
-void cLuxCompletionCountHandler::OnMapExit(cLuxMap *apMap)
+void cLuxCompletionCountHandler::OnMapLeave(cLuxMap *apMap)
 {
 	Reset();
 }
@@ -148,8 +150,6 @@ void cLuxCompletionCountHandler::OnMapExit(cLuxMap *apMap)
 
 void cLuxCompletionCountHandler::ShowCompletionIncrease(float afPrevius, float afNew, float afDelay)
 {
-	return;
-
 	if(afPrevius == afNew) return;
 
 	mbActive = true;

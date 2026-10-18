@@ -679,7 +679,11 @@ void cLuxMapHandler::CheckMapChange(float afTimeStep)
 
 		//////////////////////
 		// Run enter script! (otherwise a save in oneter will not be correct!)
-		if(bFirstTime) mpCurrentMap->RunScript("OnStart()");
+		if (bFirstTime)
+		{
+			mpCurrentMap->RunScript("OnStart()");
+			mpCurrentMap->CalculateTotalCompletionAmount();
+		}
 		mpCurrentMap->RunScript("OnEnter()");
 
 

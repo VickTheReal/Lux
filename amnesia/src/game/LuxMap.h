@@ -185,13 +185,13 @@ public:
 	int GetNumberOfQuests(){ return mlNumberOfQuests;}
 	void AddCompletionAmount(int alAmount, float afDelay=0.0f);
 
+	void CalculateTotalCompletionAmount();
+
 	void SetLanternLitCallback(const tString& asCallback){ msLanternLitCallback = asCallback;}
 	const tString& GetLanternLitCallback(){ return msLanternLitCallback;}
 	
 	
 private:
-	void CalculateTotalCompletionAmount();
-
 	int GetFreeEntityID();
 
 	void UpdateToBeDesotroyedEntities(bool abUseCallbacks);

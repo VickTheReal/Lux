@@ -243,7 +243,7 @@ bool cLuxProp_Lamp::OnInteract(iPhysicsBody *apBody, const cVector3f &avPos)
 		// Negate tinderboxes
 		gpBase->mpPlayer->AddTinderboxes(-1);
 		
-		gpBase->mpHelpFuncs->PlayGuiSoundData("ui_use_tinderbox", eSoundEntryType_Gui);
+		//gpBase->mpHelpFuncs->PlayGuiSoundData("ui_use_tinderbox", eSoundEntryType_Gui);
 
 		RunCallbackFunc("OnIgnite");
 		

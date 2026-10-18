@@ -222,56 +222,46 @@ cLuxInventory_Item::~cLuxInventory_Item()
 
 //-----------------------------------------------------------------------
 
-cLuxInventory_Slot::cLuxInventory_Slot(cLuxInventory *apInventory, cWidgetImage* apImage, int alIdx)
+cLuxInventory_Slot::cLuxInventory_Slot(cLuxInventory* apInventory, cWidgetImage* apImage, int alIdx)
 {
 	mpInventory = apInventory;
 	cGui* pGui = mpInventory->mpGui;
 
-	cGuiGfxElement* pGfx = NULL;
-	
-	if(mpInventory->msLayout_SlotGfx!="")
-		pGui->CreateGfxImage(mpInventory->msLayout_SlotGfx, eGuiMaterial_Alpha);
 
-
-	if(pGfx==NULL)
+	// Always use inventory_slot.tga
+	cGuiGfxElement* pGfx = pGui->CreateGfxImage("inventory_slot.tga", eGuiMaterial_Alpha);
+	if (pGfx == NULL)
 		pGfx = pGui->CreateGfxFilledRect(cColor(1), eGuiMaterial_Alpha);
-	pGfx->SetColor(mpInventory->mLayout_SlotColor);
 
 	mpImage = apImage;
 	mpImage->SetImage(pGfx);
 
-	if(mpInventory->mvLayout_SlotSize==cVector2f(-1))
+	if (mpInventory->mvLayout_SlotSize == cVector2f(-1))
 		mpInventory->mvLayout_SlotSize = mpImage->GetSize();
 	else
 		mpImage->SetSize(mpInventory->mvLayout_SlotSize);
 
-	mpImage->AddCallback(eGuiMessage_MouseDown,this, kGuiCallback(OnMouseDown));
-	mpImage->AddCallback(eGuiMessage_MouseUp,this, kGuiCallback(OnMouseUp));
-	mpImage->AddCallback(eGuiMessage_MouseDoubleClick,this, kGuiCallback(OnMouseDoubleClick));
-	mpImage->AddCallback(eGuiMessage_MouseEnter,this, kGuiCallback(OnMouseEnter));
-	mpImage->AddCallback(eGuiMessage_MouseLeave,this, kGuiCallback(OnMouseLeave));
-	mpImage->AddCallback(eGuiMessage_OnUpdate,this, kGuiCallback(OnUpdate));
-	mpImage->AddCallback(eGuiMessage_OnDraw,this, kGuiCallback(OnDraw));
+	mpImage->AddCallback(eGuiMessage_MouseDown, this, kGuiCallback(OnMouseDown));
+	mpImage->AddCallback(eGuiMessage_MouseUp, this, kGuiCallback(OnMouseUp));
+	mpImage->AddCallback(eGuiMessage_MouseDoubleClick, this, kGuiCallback(OnMouseDoubleClick));
+	mpImage->AddCallback(eGuiMessage_MouseEnter, this, kGuiCallback(OnMouseEnter));
+	mpImage->AddCallback(eGuiMessage_MouseLeave, this, kGuiCallback(OnMouseLeave));
+	mpImage->AddCallback(eGuiMessage_OnUpdate, this, kGuiCallback(OnUpdate));
+	mpImage->AddCallback(eGuiMessage_OnDraw, this, kGuiCallback(OnDraw));
 	mpImage->AddCallback(eGuiMessage_GetUINavFocus, this, kGuiCallback(OnGetUINavFocus));
 	mpImage->AddCallback(eGuiMessage_LoseUINavFocus, this, kGuiCallback(OnLoseUINavFocus));
 	mpImage->AddCallback(eGuiMessage_UIButtonPress, this, kGuiCallback(OnUIButtonPress));
 	mpImage->AddCallback(eGuiMessage_UIButtonDoublePress, this, kGuiCallback(OnUIButtonDoublePress));
 	mpImage->AddCallback(eGuiMessage_UIButtonRelease, this, kGuiCallback(OnUIButtonRelease));
 
-	mpGlowGfx = NULL;
-
-	if(mpInventory->msLayout_SlotMouseOverGfx!="")
-		mpGlowGfx = mpInventory->mpGui->CreateGfxImage(mpInventory->msLayout_SlotMouseOverGfx,eGuiMaterial_Alpha);
-
-	if(mpGlowGfx==NULL)
+	// Always use inventory_slot_glow.tga
+	mpGlowGfx = mpInventory->mpGui->CreateGfxImage("inventory_slot_glow.tga", eGuiMaterial_Alpha);
+	if (mpGlowGfx == NULL)
 	{
 		mpGlowGfx = pGui->CreateGfxFilledRect(cColor(1), eGuiMaterial_Alpha);
-		mpGlowGfx->SetActiveSize(mpInventory->mvLayout_SlotSize);
 	}
-	mpGlowGfx->SetColor(mpInventory->mLayout_SlotMouseOverColor);
 
 	mlIdx = alIdx;
-
 	mfGlowAlpha = 0;
 }
 
@@ -348,9 +338,6 @@ bool cLuxInventory_Slot::OnMouseUp(iWidget* apWidget, const cGuiMessageData& aDa
 			}
 		}
 
-		////////////////////////////////
-		// Set back the normal description,
-		// Need to get item again in case there have been changes.
 		iLuxItemType *pItemType = mpInventory->GetItemTypeData(pItem->GetType());
 		pItem = GetItem();
 		mpInventory->SetDescTextFromItem(pItem);
@@ -535,53 +522,42 @@ bool cLuxInventory_Slot::OnDraw(iWidget* apWidget, const cGuiMessageData& aData)
 {
 	float fTimeStep = aData.mfVal;
 
-	const cVector2f &vSize = apWidget->GetSize();
+	const cVector2f& vSize = apWidget->GetSize();
 
-	///////////////////////////////////
-	//Glow
-	/*if(mfGlowAlpha >0)
+	/////////////
+	// Draw glow
+	if (mfGlowAlpha > 0)
 	{
-		mpInventory->mpGuiSet->DrawGfx(	mpGlowGfx, apWidget->GetGlobalPosition()+mpInventory->mvLayout_SlotMouseOverOffset,
-										mpGlowGfx->GetActiveSize(),	cColor(mfGlowAlpha * mpInventory->mfAlpha,1) );
-	}*/
+		mpInventory->mpGuiSet->DrawGfx(mpGlowGfx,
+			apWidget->GetGlobalPosition(),
+			vSize,
+			cColor(1.0f, mfGlowAlpha * mpInventory->mfAlpha),
+			eGuiMaterial_Alpha);
+	}
 
-	//////////////////////////////////
-	//Item
-	cLuxInventory_Item *pItem = GetItem();
-	if(pItem && pItem != mpInventory->GetPickedItem())
+	/////////////
+	// Draw item
+	cLuxInventory_Item* pItem = GetItem();
+	if (pItem && pItem != mpInventory->GetPickedItem())
 	{
-		cVector3f vItemPos = apWidget->GetGlobalPosition() + cVector3f((vSize-pItem->GetImage()->GetImageSize()))*0.5f;
+		cVector3f vItemPos = apWidget->GetGlobalPosition() + cVector3f((vSize - pItem->GetImage()->GetImageSize())) * 0.5f;
 		vItemPos.z += 0.1f;
 
-		mpInventory->mpGuiSet->DrawGfx(	pItem->GetImage(), vItemPos,-1,cColor(1,mpInventory->mfAlpha) );
+		mpInventory->mpGuiSet->DrawGfx(pItem->GetImage(), vItemPos, -1, cColor(1, mpInventory->mfAlpha));
 
-		/////////////////////////////////////////////////////
-		// Draw "outline" - TODO: this looks really bad right now
-		if(mfGlowAlpha > 0)
+		///////////////////
+		// Draw item count
+		iLuxItemType* pType = mpInventory->mvItemTypes[pItem->GetType()];
+		if (pType->HasCount())
 		{
-			float fMin = mpInventory->mfLayout_SlotPulsatingMin;
-			float fAmp = mpInventory->mfLayout_SlotPulsatingAmp;
-			float fFreq = mpInventory->mfLayout_SlotPulsatingFreq;
+			cVector3f vPos = apWidget->GetGlobalPosition() + cVector3f(vSize.x, 40, 0) + mpInventory->mvLayout_ItemCountOffset;
 
-			float fPulseAlpha = fMin + (1.0f-fMin)*(cos(mpInventory->mfTimer*fFreq)*0.5f+0.5f);
-			
-			for(int i=0; i<2; ++i)
-				mpInventory->mpGuiSet->DrawGfx(pItem->GetImage(), vItemPos+cVector3f(0,0,0.1f),-1, cColor(fPulseAlpha*mfGlowAlpha*mpInventory->mfAlpha, 1), eGuiMaterial_Additive);
-		}
-
-		///////////////
-		//Draw count
-		iLuxItemType *pType = mpInventory->mvItemTypes[pItem->GetType()];
-		if(pType->HasCount())
-		{
-			cVector3f vPos = apWidget->GetGlobalPosition() + cVector3f(vSize.x,0,0) + mpInventory->mvLayout_ItemCountOffset;
-
-			mpInventory->mpGuiSet->DrawFont(mpInventory->mpFontDefault, vPos,mpInventory->mvLayout_FontSize_ItemCount,
-											cColor(1,mpInventory->mfAlpha),eFontAlign_Center, eGuiMaterial_FontNormal,
-											_W("x%d"), pItem->GetCount());
+			mpInventory->mpGuiSet->DrawFont(mpInventory->mpFontDefault, vPos, mpInventory->mvLayout_FontSize_ItemCount,
+				cColor(1, mpInventory->mfAlpha), eFontAlign_Center, eGuiMaterial_FontNormal,
+				_W("%d"), pItem->GetCount());
 		}
 	}
-	
+
 	return true;
 }
 kGuiCallbackDeclaredFuncEnd(cLuxInventory_Slot, OnDraw);
@@ -656,8 +632,7 @@ void cLuxInventory::OnGameStart()
 void cLuxInventory::Update(float afTimeStep)
 {
 	/////////////////////////////
-	// Update Picked item
-	// Simple way to make sure the picked item is dropped.
+	// Update picked item
 	if(gpBase->mpEngine->GetInput()->IsTriggerd(eLuxAction_LeftClick)==false && 
 		gpBase->mpEngine->GetInput()->IsTriggerd(eLuxAction_UIPrimary)==false)
 	{
@@ -907,23 +882,29 @@ void cLuxInventory::OnDraw(float afFrameTime)
 
 	////////////////////////
 	//Player properties
-	/*
-	cVector3f vPlayerDataStart = cVector3f(10,300,1);
+
+	cVector3f vPlayerDataStart = cVector3f(10, 380, 1);
 	float fPlayerDataXAdd = 140;
-    
-	mpGuiSet->DrawFont(	mpFontDefault, vPlayerDataStart,20,cColor(1,mfAlpha),_W("%ls"), kTranslate("Inventory", "LampOil:").c_str());
-	mpGuiSet->DrawFont(	mpFontDefault, vPlayerDataStart+cVector3f(fPlayerDataXAdd,0,0),20,cColor(1,mfAlpha),_W("%.0f%%"), gpBase->mpPlayer->GetLampOil());
-	vPlayerDataStart.y+= 22;
 
-	mpGuiSet->DrawFont(	mpFontDefault, vPlayerDataStart,20,cColor(1,mfAlpha),_W("%ls"), kTranslate("Inventory", "Thalers:").c_str());
-	mpGuiSet->DrawFont(	mpFontDefault, vPlayerDataStart+cVector3f(fPlayerDataXAdd,0,0),20,cColor(1,mfAlpha),_W("%d"), gpBase->mpPlayer->GetCoins());
-	vPlayerDataStart.y+= 22;
+	mpGuiSet->DrawFont(mpFontDefault, vPlayerDataStart, 20, cColor(1, mfAlpha), _W("%ls"), kTranslate("Inventory", "Health").c_str());
+	mpGuiSet->DrawFont(mpFontDefault, vPlayerDataStart + cVector3f(fPlayerDataXAdd, 0, 0), 20, cColor(1, mfAlpha), _W("%.0f%%"), gpBase->mpPlayer->GetHealth());
+	vPlayerDataStart.y += 22;
 
-	mpGuiSet->DrawFont(	mpFontDefault, vPlayerDataStart,20,cColor(1,mfAlpha),_W("%ls"), kTranslate("Inventory", "Tinderboxes:").c_str());
-	mpGuiSet->DrawFont(	mpFontDefault, vPlayerDataStart+cVector3f(fPlayerDataXAdd,0,0),20,cColor(1,mfAlpha),_W("%d"), gpBase->mpPlayer->GetTinderboxes());
-	vPlayerDataStart.y+= 22;
-	*/
+	mpGuiSet->DrawFont(mpFontDefault, vPlayerDataStart, 20, cColor(1, mfAlpha), _W("%ls"), kTranslate("Inventory", "Sanity").c_str());
+	mpGuiSet->DrawFont(mpFontDefault, vPlayerDataStart + cVector3f(fPlayerDataXAdd, 0, 0), 20, cColor(1, mfAlpha), _W("%.0f%%"), gpBase->mpPlayer->GetSanity());
+	vPlayerDataStart.y += 22;
 
+	mpGuiSet->DrawFont(mpFontDefault, vPlayerDataStart, 20, cColor(1, mfAlpha), _W("%ls"), kTranslate("Inventory", "LampOil").c_str());
+	mpGuiSet->DrawFont(mpFontDefault, vPlayerDataStart + cVector3f(fPlayerDataXAdd, 0, 0), 20, cColor(1, mfAlpha), _W("%.0f%%"), gpBase->mpPlayer->GetLampOil());
+	vPlayerDataStart.y += 22;
+
+	mpGuiSet->DrawFont(mpFontDefault, vPlayerDataStart, 20, cColor(1, mfAlpha), _W("%ls"), kTranslate("Inventory", "Thalers").c_str());
+	mpGuiSet->DrawFont(mpFontDefault, vPlayerDataStart + cVector3f(fPlayerDataXAdd, 0, 0), 20, cColor(1, mfAlpha), _W("%d"), gpBase->mpPlayer->GetCoins());
+	vPlayerDataStart.y += 22;
+
+	mpGuiSet->DrawFont(mpFontDefault, vPlayerDataStart, 20, cColor(1, mfAlpha), _W("%ls"), kTranslate("Inventory", "Tinderboxes").c_str());
+	mpGuiSet->DrawFont(mpFontDefault, vPlayerDataStart + cVector3f(fPlayerDataXAdd, 0, 0), 20, cColor(1, mfAlpha), _W("%d"), gpBase->mpPlayer->GetTinderboxes());
+	vPlayerDataStart.y += 22;
 		
 	////////////////////////
 	//Draw Message text
@@ -948,21 +929,6 @@ void cLuxInventory::OnDraw(float afFrameTime)
 	
 	if(msNormalText != _W(""))
 		DrawDescTextRow(msNormalText, cColor(1,1));
-
-	////////////////////////
-	//Draw frame around text
-	{
-		// Set frame start pos using corner size, padding and frame size
-		cVector3f vTextFramePos = vHeaderCenter - 
-			cVector3f(mvLayout_ItemTextFrameSize.x, 0, 0)*0.5f - 
-			cVector3f(mpFrameGenericCorners[0]->GetActiveSize()) -
-			cVector3f(mvLayout_ItemTextFrameHPadding.x, mvLayout_ItemTextFrameVPadding.y, 0) + 
-			mvLayout_ItemTextFrameOffset;
-
-		DrawFrame(mpFrameGenericCorners, mpFrameGenericBorders, 
-					vTextFramePos, mvLayout_ItemTextFrameSize);
-	}
-
     
 	////////////////////////
 	//Draw old text
@@ -979,6 +945,13 @@ void cLuxInventory::OnDraw(float afFrameTime)
 	//Draw extra effects and hints
 	gpBase->mpHintHandler->DrawHintText(afFrameTime, mpGuiSet);
 	gpBase->mpEffectHandler->GetSanityGainFlash()->DrawFlash(mpGuiSet, afFrameTime);
+
+	// Hide all the widgets, leave only percentage text
+	mpSanityWidget->SetVisible(false);
+	mpHealthWidget->SetVisible(false);
+	mpTinderboxWidget->SetVisible(false);
+	mpOilWidget->SetVisible(false);
+	mpJournalWidget->SetVisible(false);
 }
 
 //-----------------------------------------------------------------------
@@ -1481,8 +1454,8 @@ void cLuxInventory::DrawDescTextRow(const tWString& asText, const cColor& aCol)
 	for(size_t i=0; i<vRows.size(); ++i)
 	{
 		float fY = fStartY + (float)i * (vFontSize.y+1);
-		//mpGuiSet->DrawFont(vRows[i], mpFontDefault, cVector3f(vMessageBodyCenter.x,fY ,1),vFontSize.y,finalCol,eFontAlign_Center);
-		mpGuiSet->DrawFont(vRows[i], mpFontDefault, cVector3f(vMessageBodyCenter.x-fHalfWidth, fY, 1), vFontSize.y, finalCol, eFontAlign_Left);
+		mpGuiSet->DrawFont(vRows[i], mpFontDefault, cVector3f(vMessageBodyCenter.x,fY ,1),vFontSize.y,finalCol,eFontAlign_Center);
+		//mpGuiSet->DrawFont(vRows[i], mpFontDefault, cVector3f(vMessageBodyCenter.x-fHalfWidth, fY, 1), vFontSize.y, finalCol, eFontAlign_Left);
 	}
 }
 
@@ -1668,8 +1641,8 @@ void cLuxInventory::CreateGui()
 	mfLayout_SlotPulsatingFreq = pMenuCfg->GetFloat("Inventory", "SlotPulsatingFreq", 2);
 
 	// Item slots
-	mlLayout_SlotsRows = pMenuCfg->GetInt("Inventory", "SlotsRows", 3);
-	mlLayout_SlotsColumns = pMenuCfg->GetInt("Inventory", "SlotsColumns", 6);
+	mlLayout_SlotsRows = pMenuCfg->GetInt("Inventory", "SlotsRows", 2);
+	mlLayout_SlotsColumns = pMenuCfg->GetInt("Inventory", "SlotsColumns", 8);
 	mLayout_SlotsGridColor = pMenuCfg->GetColor("Inventory", "SlotsGridColor", cColor(0.3f,0.5f));
 	mvLayout_SlotsStart = pMenuCfg->GetVector3f("Inventory", "SlotsStart", 0);
 	mvLayout_SlotsSeparation = pMenuCfg->GetVector3f("Inventory", "SlotsSeparation", 0);
@@ -1682,7 +1655,19 @@ void cLuxInventory::CreateGui()
 	mvLayout_SlotGridHExtension = pMenuCfg->GetVector2f("Inventory", "SlotsGridHExtension", 0);
 	mvLayout_SlotGridVExtension = pMenuCfg->GetVector2f("Inventory", "SlotsGridVExtension", 0);
 	mvLayout_SlotsGridOffset = pMenuCfg->GetVector3f("Inventory", "SlotsGridOffset", 0);
-	
+
+	// Draw 2x8 inventory slots
+	mlLayout_SlotsRows = 2;
+	mlLayout_SlotsColumns = 8;
+
+	mvLayout_SlotSize = cVector2f(88, 88);
+	mvLayout_SlotsStart = cVector3f(16, 30, 1);
+	mvLayout_SlotsSeparation = cVector3f(10, 10, 0);
+
+	// Belt-and-braces: make sure the old frame / grid are never drawn
+	mbLayout_DrawSlotsFrame = false;
+	mbLayout_DrawSlotsGrid = false;
+
 	// Health
 	mvLayout_HealthCenter = pMenuCfg->GetVector3f("Inventory", "HealthCenter", 0);
 	mvLayout_HealthLabelCenter = pMenuCfg->GetVector3f("Inventory", "HealthLabelCenter", 0);
@@ -1858,7 +1843,6 @@ void cLuxInventory::CreateGui()
 	// Create Slot group
 	const cVector3f& vSlotStart = mvLayout_SlotsStart;
     cWidgetDummy *pSlotGroup = mpGuiSet->CreateWidgetDummy(vSlotStart);
-	pSlotGroup->AddCallback(eGuiMessage_OnDraw, this, kGuiCallback(ItemSlotsOnDraw));
 
 	/////////////////////////////////
 	// Create slots
@@ -1881,63 +1865,31 @@ void cLuxInventory::CreateGui()
 	}
 
 	mpLastCurrentWidget = mvSlots[0]->GetImageWidget();
-	
-	//////////////////////////////////////////////////////////////
-	// Set up navigation
-	mpGuiSet->SetDefaultFocusNavWidget(pHealth);
-	pHealth->SetFocusNavigation(eUIArrow_Down, pSanity);
-	pHealth->SetFocusNavigation(eUIArrow_Right, mvSlots[0+0]->GetImageWidget());
-	pSanity->SetFocusNavigation(eUIArrow_Up, pHealth);
-	pSanity->SetFocusNavigation(eUIArrow_Right, mvSlots[2*mlLayout_SlotsColumns+0]->GetImageWidget());
-	pTinderbox->SetFocusNavigation(eUIArrow_Left, mvSlots[0+mlLayout_SlotsColumns-1]->GetImageWidget());
-	pTinderbox->SetFocusNavigation(eUIArrow_Down, pOil);
-	pOil->SetFocusNavigation(eUIArrow_Up, pTinderbox);
-	pOil->SetFocusNavigation(eUIArrow_Left, mvSlots[1*mlLayout_SlotsColumns+mlLayout_SlotsColumns-1]->GetImageWidget());
-	pOil->SetFocusNavigation(eUIArrow_Down, pJournal);
-	pJournal->SetFocusNavigation(eUIArrow_Up, pOil);
-	pJournal->SetFocusNavigation(eUIArrow_Left, mvSlots[2*mlLayout_SlotsColumns+mlLayout_SlotsColumns-1]->GetImageWidget());
 
+	// This is here so the universe doesn't collapse on startup
+	mpGuiSet->SetDefaultFocusNavWidget(mvSlots[0]->GetImageWidget());
 
-	for(int y=0; y<mlLayout_SlotsRows; ++y)
-	for(int x=0; x<mlLayout_SlotsColumns; ++x)
-	{
-		cLuxInventory_Slot *pSlot = mvSlots[y*mlLayout_SlotsColumns + x];
-		iWidget* pSlotWidget = pSlot->GetImageWidget();
+	for (int y = 0; y < mlLayout_SlotsRows; ++y)
+		for (int x = 0; x < mlLayout_SlotsColumns; ++x)
+		{
+			cLuxInventory_Slot* pSlot = mvSlots[y * mlLayout_SlotsColumns + x];
+			iWidget* pSlotWidget = pSlot->GetImageWidget();
 
-		iWidget* pWidgetAtLeft = NULL;
-		iWidget* pWidgetAtRight = NULL;
-		iWidget* pWidgetAbove = NULL;
-		iWidget* pWidgetBelow = NULL;
-		
-		// Check boundaries for validity of adjacent widgets
-		if(x-1>=0)
-			pWidgetAtLeft = mvSlots[y*mlLayout_SlotsColumns + x-1]->GetImageWidget();
+			int lLeftX = (x - 1 + mlLayout_SlotsColumns) % mlLayout_SlotsColumns;
+			int lRightX = (x + 1) % mlLayout_SlotsColumns;
+			int lUpY = (y - 1 + mlLayout_SlotsRows) % mlLayout_SlotsRows;
+			int lDownY = (y + 1) % mlLayout_SlotsRows;
 
-		if(x+1<mlLayout_SlotsColumns)
-			pWidgetAtRight = mvSlots[y*mlLayout_SlotsColumns + x+1]->GetImageWidget();
+			iWidget* pWidgetAtLeft = mvSlots[y * mlLayout_SlotsColumns + lLeftX]->GetImageWidget();
+			iWidget* pWidgetAtRight = mvSlots[y * mlLayout_SlotsColumns + lRightX]->GetImageWidget();
+			iWidget* pWidgetAbove = mvSlots[lUpY * mlLayout_SlotsColumns + x]->GetImageWidget();
+			iWidget* pWidgetBelow = mvSlots[lDownY * mlLayout_SlotsColumns + x]->GetImageWidget();
 
-		if(y-1>=0)
-			pWidgetAbove = mvSlots[(y-1)*mlLayout_SlotsColumns + x]->GetImageWidget();
-
-		if(y+1<mlLayout_SlotsRows)
-			pWidgetBelow = mvSlots[(y+1)*mlLayout_SlotsColumns + x]->GetImageWidget();
-
-
-		////////////////////////////////////////////////
-		// Set up navigation for current slot
-		pSlotWidget->SetFocusNavigation(eUIArrow_Up, pWidgetAbove);
-		pSlotWidget->SetFocusNavigation(eUIArrow_Right, pWidgetAtRight);
-		pSlotWidget->SetFocusNavigation(eUIArrow_Down, pWidgetBelow);
-		pSlotWidget->SetFocusNavigation(eUIArrow_Left, pWidgetAtLeft);
-	}
-
-	mvSlots[0+0]->GetImageWidget()->SetFocusNavigation(eUIArrow_Left, pHealth);
-	mvSlots[mlLayout_SlotsColumns+0]->GetImageWidget()->SetFocusNavigation(eUIArrow_Left, pHealth);
-	mvSlots[2*mlLayout_SlotsColumns+0]->GetImageWidget()->SetFocusNavigation(eUIArrow_Left, pSanity);
-
-	mvSlots[0+mlLayout_SlotsColumns-1]->GetImageWidget()->SetFocusNavigation(eUIArrow_Right, pTinderbox);
-	mvSlots[mlLayout_SlotsColumns+mlLayout_SlotsColumns-1]->GetImageWidget()->SetFocusNavigation(eUIArrow_Right, pOil);
-	mvSlots[2*mlLayout_SlotsColumns+mlLayout_SlotsColumns-1]->GetImageWidget()->SetFocusNavigation(eUIArrow_Right, pOil);
+			pSlotWidget->SetFocusNavigation(eUIArrow_Up, pWidgetAbove);
+			pSlotWidget->SetFocusNavigation(eUIArrow_Right, pWidgetAtRight);
+			pSlotWidget->SetFocusNavigation(eUIArrow_Down, pWidgetBelow);
+			pSlotWidget->SetFocusNavigation(eUIArrow_Left, pWidgetAtLeft);
+		}
 }
 
 //-----------------------------------------------------------------------
@@ -2249,42 +2201,6 @@ kGuiCallbackDeclaredFuncEnd(cLuxInventory, JournalUIButtonPress);
 
 bool cLuxInventory::ItemSlotsOnDraw(iWidget* apWidget, const cGuiMessageData& aData)
 {
-	if(mbLayout_DrawSlotsFrame)
-	{
-		DrawFrameAroundWidget(mpFrameGenericCorners, mpFrameGenericBorders, apWidget, 
-								mvLayout_SlotFrameHPadding, mvLayout_SlotFrameVPadding, 
-								mvLayout_SlotFrameOffset, mvLayout_SlotFrameSize);
-	}
-
-	if(mbLayout_DrawSlotsGrid)
-	{
-		// Get grid lines size
-		cVector2f vHoriSize = cVector2f(apWidget->GetSize().x + mvLayout_SlotGridHExtension.x + mvLayout_SlotGridHExtension.y, 
-										mvLayout_SlotsSeparation.y);
-		cVector2f vVertSize = cVector2f(mvLayout_SlotsSeparation.x, 
-										apWidget->GetSize().y + mvLayout_SlotGridVExtension.x + mvLayout_SlotGridVExtension.y);
-
-		// Get grid lines separation
-		cVector2f vLineSeparation = mvLayout_SlotSize + 
-									cVector2f(mvLayout_SlotsSeparation.x, mvLayout_SlotsSeparation.y);
-
-		// Get grid start point
-		cVector3f vPos = mvLayout_SlotsStart - 
-							cVector3f(mvLayout_SlotFrameHPadding.x, mvLayout_SlotFrameVPadding.x, 0) +
-							mvLayout_SlotFrameOffset + mvLayout_SlotsGridOffset;
-
-		// Get line color
-		cColor lineColor = mLayout_SlotsGridColor;
-		lineColor.a *= mfAlpha;
-
-		// Draw crossed lines
-		for(int i=1;i<mlLayout_SlotsRows;++i)
-			mpGuiSet->DrawGfx(mpWhiteGfx, vPos + cVector3f(-mvLayout_SlotGridHExtension.x,vLineSeparation.y*i,0), vHoriSize, lineColor);
-
-		for(int i=1;i<mlLayout_SlotsColumns;++i)
-			mpGuiSet->DrawGfx(mpWhiteGfx, vPos + cVector3f(vLineSeparation.x*i,-mvLayout_SlotGridVExtension.x,0), vVertSize, lineColor);
-	}
-
 	return true;
 }
 kGuiCallbackDeclaredFuncEnd(cLuxInventory, ItemSlotsOnDraw);
@@ -2342,20 +2258,10 @@ kGuiCallbackDeclaredFuncEnd(cLuxInventory, UIButtonPress);
 
 //-----------------------------------------------------------------------
 
-void cLuxInventory::StatusWidgetUpdate(iWidget* apWidget, int alStatusIdx, cGuiGfxElement** avStatusGfx, const cVector3f &avPos)
+void cLuxInventory::StatusWidgetUpdate(iWidget* apWidget, int alStatusIdx, cGuiGfxElement** avStatusGfx, const cVector3f& avPos)
 {
-	////////////////////////////////////////////////////////////
-	// Helper for updating status widgets
-
-	cWidgetImage* pImage = (cWidgetImage*)apWidget;
-	cGuiGfxElement* pOldGfx = pImage->GetImage();
-	cGuiGfxElement* pNewGfx = avStatusGfx[alStatusIdx];
-	if(pNewGfx!=pOldGfx)
-	{
-		pImage->SetImage(pNewGfx);
-		pImage->SetPosition(avPos-cVector3f(pNewGfx->GetImageSize())*0.5f);
-		pImage->SetSize(pNewGfx->GetImageSize());
-	}
+	// Icon graphics are no longer used
+	(void)apWidget; (void)alStatusIdx; (void)avStatusGfx; (void)avPos;
 }
 
 void cLuxInventory::StatusWidgetDraw(const cVector3f& avPos, int alStatusIdx, cGuiGfxElement** apStatusGlowGfx)

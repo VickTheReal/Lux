@@ -63,7 +63,7 @@ cLuxMessageHandler::~cLuxMessageHandler()
 
 void cLuxMessageHandler::LoadFonts()
 {
-	tString sFontFile = "game_default.fnt";
+	tString sFontFile = "game_header.fnt";
 	mpFont = LoadFont(sFontFile);
 }
 

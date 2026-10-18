@@ -165,19 +165,19 @@ tWString cLuxProp_LevelDoor::GetFocusText()
 {
 	tWString sStr =	kTranslate("Levels", msTextEntry) + _W("\n");
 
-	/*if(mbShowStats)
+	if(mbShowStats)
 	{
 		int lPercent=0;
 		tString sMapName = gpBase->mpMapHandler->FileToMapName(msMapFile);
 		cLuxSavedGameMap *pSavedMap = gpBase->mpMapHandler->GetSavedMapCollection()->GetSavedMap(sMapName,false);
-		if(pSavedMap)
+		if (pSavedMap && pSavedMap->mlTotalCompletionAmount > 0)
 		{
 			float fP = ((float)pSavedMap->mlCurrentCompletionAmount / (float)pSavedMap->mlTotalCompletionAmount) *100.0f;
 			lPercent = (int)fP;
 		}
 		
 		sStr += cString::ToStringW(lPercent)+_W("% ")+kTranslate("CompletionCount", "Completed");
-	}*/
+	}
 	
 	return sStr;
 }

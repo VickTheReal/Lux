@@ -228,7 +228,7 @@ bool iLuxPlayerState_DefaultBase::ShowOutlineOnEntity(iLuxEntity *apEntity, iPhy
 
 	iLuxProp *pProp = static_cast<iLuxProp*>(apEntity);
 
-	return pProp->GetPropType()==eLuxPropType_Item && apEntity->CanInteract(apBody) && apEntity->GetInteractionDisabled()==false;
+	return (pProp->GetPropType()==eLuxPropType_Item || pProp->GetPropType() == eLuxPropType_SwingDoor || pProp->GetPropType() == eLuxPropType_Object) && apEntity->CanInteract(apBody) && apEntity->GetInteractionDisabled()==false;
 }
 
 //-----------------------------------------------------------------------
