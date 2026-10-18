@@ -1,0 +1,13 @@
+<SOUNDENTITY>
+  <SOUNDS>
+  	<Main>
+  		<Sound File="infected/infected_notice_stop1" />
+  		<Sound File="infected/infected_notice_stop2" />
+  		<Sound File="infected/infected_notice_stop3" />
+		<Sound File="infected/infected_notice_stop4" />
+		<Sound File="infected/infected_notice_stop5" />
+		<Sound File="infected/infected_notice_stop6" />
+  	</Main>
+  </SOUNDS>
+  <PROPERTIES Volume="0.7" MinDistance="0.5" MaxDistance="15" Random="1" Interval="0" FadeEnd="False" FadeStart="False" Stream="False" Loop="False" Use3D="True" Blockable="False" BlockVolumeMul="0.7" Priority="0" />
+</SOUNDENTITY>

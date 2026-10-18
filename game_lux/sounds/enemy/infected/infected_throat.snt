@@ -1,0 +1,10 @@
+<SOUNDENTITY>
+ <SOUNDS>
+  	<Main>
+  		<Sound File="infected_throat1.ogg" />
+  		<Sound File="infected_throat2.ogg" />
+  		<Sound File="infected_throat3.ogg" />
+	</Main>
+  </SOUNDS>
+  <PROPERTIES Volume="1" MinDistance="2" MaxDistance="10" Random="1" Interval="0" FadeEnd="False" FadeStart="False" Stream="False" Loop="False" Use3D="True" Blockable="True" BlockVolumeMul="0.5" Priority="0" />
+</SOUNDENTITY>

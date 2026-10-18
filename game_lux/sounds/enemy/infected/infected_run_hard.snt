@@ -1,0 +1,11 @@
+<SOUNDENTITY>
+  <SOUNDS>
+  	<Main>
+  		<Sound File="infected/infected_run_hard1" />
+  		<Sound File="infected/infected_run_hard2" />
+  		<Sound File="infected/infected_run_hard3" />
+		<Sound File="infected/infected_run_hard4" />
+  	</Main>
+  </SOUNDS>
+  <PROPERTIES Volume="0.8" MinDistance="0.3" MaxDistance="16" Random="1" Interval="0" FadeEnd="False" FadeStart="False" Stream="False" Loop="False" Use3D="True" Blockable="True" BlockVolumeMul="0.5" Priority="0" />
+</SOUNDENTITY>
