@@ -1,0 +1,54 @@
+<Entity>
+    <EditorSession>
+        <Performance CamClipPlanes="0.05 1000" LightsActive="true" PSActive="true" ShowFog="true" ShowSkybox="true" WorldReflection="true" />
+        <ViewportConfig BGColor="0.2 0.2 0.2 1" GAmbientLight="true" GPointLight="true" GridSnap="false" GridSnapSeparation="0.25" SelectedViewport="3" UsingEnlargedViewport="true">
+            <Viewport CameraPosition="0 0 180" CameraTarget="0 0 0" CameraZoom="0" GridHeight="0" GridPlane="2" Preset="0" RenderMode="1" ShowAxes="true" ShowGrid="true" UsingLTCam="false" />
+            <Viewport CameraPosition="180 0 0" CameraTarget="0 0 0" CameraZoom="0" GridHeight="0" GridPlane="0" Preset="1" RenderMode="1" ShowAxes="true" ShowGrid="true" UsingLTCam="false" />
+            <Viewport CameraPosition="0 180 0" CameraTarget="0 0 0" CameraZoom="0" GridHeight="0" GridPlane="1" Preset="2" RenderMode="1" ShowAxes="true" ShowGrid="true" UsingLTCam="false" />
+            <Viewport CameraPosition="-0.271777 0.495177 0.606275" CameraTarget="0 0 0" CameraZoom="4.1" GridHeight="0" GridPlane="1" Preset="3" RenderMode="0" ShowAxes="true" ShowGrid="true" UsingLTCam="false" />
+        </ViewportConfig>
+    </EditorSession>
+    <ModelData>
+        <Entities />
+        <Mesh Filename="entities/item/pickaxe/pickaxe.dae">
+            <SubMesh Active="true" ID="4" Material="" Name="axe" Rotation="0 0 -1.5708" Scale="4 4 4" SubMeshID="0" Tag="" WorldPos="-0.0979499 0.0294845 0.006" />
+        </Mesh>
+        <Bones />
+        <Shapes>
+            <BodyShape Active="true" ID="1" Name="Shape_1" RelativeRotation="0 -0 -1.5708" RelativeScale="0.02 0.6 0.02" RelativeTranslation="-0.12981 -0.000772015 -0.00278005" Rotation="0 0 -1.5708" Scale="0.02 0.6 0.02" ShapeType="Cylinder" Tag="" WorldPos="-0.0326869 0.0222706 0" />
+            <BodyShape Active="true" ID="2" Name="Shape_2" RelativeRotation="0 -0 0" RelativeScale="0.057 0.057 0.42" RelativeTranslation="0.12981 0.000772015 0.00278005" Rotation="0 0 0" Scale="0.057 0.057 0.42" ShapeType="Box" Tag="" WorldPos="0.226933 0.0238147 0.0055601" />
+        </Shapes>
+        <Bodies>
+            <Body Active="true" AngularDamping="0.2" BlocksSound="false" BuoyancyDensityMul="1" CanAttachCharacter="false" CollideCharacter="false" CollideNonCharacter="true" ContinuousCollision="true" HasGravity="true" ID="3" LinearDamping="0.2" Mass="2" Material="Metal" MaxAngularSpeed="16" MaxLinearSpeed="16" Name="Body_1" PushedByCharacterGravity="false" Rotation="0 0 0" Scale="1 1 1" Tag="" UseSurfaceEffects="true" Volatile="false" WorldPos="0.0971231 0.0230427 0.00278005">
+                <Shape ID="2" />
+                <Shape ID="1" />
+            </Body>
+        </Bodies>
+        <Joints />
+        <Animations />
+    </ModelData>
+    <UserDefinedVariables EntitySubType="HandObject" EntityType="Item">
+        <Var Name="Health" Value="100" />
+        <Var Name="Toughness" Value="0" />
+        <Var Name="MaxFocusDistance" Value="0" />
+        <Var Name="MainPhysicsBody" Value="" />
+        <Var Name="ShowMesh" Value="true" />
+        <Var Name="DissolveOnDestruction" Value="false" />
+        <Var Name="DissolveTime" Value="1.0" />
+        <Var Name="EffectsOnSound" Value="" />
+        <Var Name="EffectsOffSound" Value="" />
+        <Var Name="EffectsOnTime" Value="1" />
+        <Var Name="EffectsOffTime" Value="1" />
+        <Var Name="EffectsOffLightColor" Value="0 0 0 0" />
+        <Var Name="EffectsOffLightRadius" Value="-1" />
+        <Var Name="ShowHints" Value="true" />
+        <Var Name="StaticMoveCheckCollision" Value="false" />
+        <Var Name="StaticMoveStartSound" Value="" />
+        <Var Name="StaticMoveStopSound" Value="" />
+        <Var Name="StaticMoveLoopSound" Value="" />
+        <Var Name="RandomizeAnimationStart" Value="true" />
+        <Var Name="SubItemTypeName" Value="pickaxe" />
+        <Var Name="ImageFile" Value="C:/Steam/steamapps/common/Amnesia The Dark Descent/graphics/item/pickaxe.tga" />
+        <Var Name="PickSound" Value="Generic" />
+    </UserDefinedVariables>
+</Entity>

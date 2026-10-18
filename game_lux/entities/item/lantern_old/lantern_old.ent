@@ -1,0 +1,73 @@
+<Entity>
+    <EditorSession>
+        <Performance CamClipPlanes="0.05 1000" LightsActive="true" PSActive="true" ShowFog="true" ShowSkybox="true" WorldReflection="true" />
+        <ViewportConfig BGColor="0.2 0.2 0.2 1" GAmbientLight="true" GPointLight="true" GridSnap="false" GridSnapSeparation="0.25" SelectedViewport="3" UsingEnlargedViewport="true">
+            <Viewport CameraPosition="0 0 180" CameraTarget="0 0 0" CameraZoom="0" GridHeight="0" GridPlane="2" Preset="0" RenderMode="1" ShowAxes="true" ShowGrid="true" UsingLTCam="false" />
+            <Viewport CameraPosition="180 0 0" CameraTarget="0 0 0" CameraZoom="0" GridHeight="0" GridPlane="0" Preset="1" RenderMode="1" ShowAxes="true" ShowGrid="true" UsingLTCam="false" />
+            <Viewport CameraPosition="0 180.038 0" CameraTarget="0 0.0380353 0" CameraZoom="0" GridHeight="0.0380353" GridPlane="1" Preset="2" RenderMode="1" ShowAxes="true" ShowGrid="true" UsingLTCam="false" />
+            <Viewport CameraPosition="0.179539 0.183656 -1.00375" CameraTarget="-0.0141347 0.169681 -0.121941" CameraZoom="4.01413" GridHeight="0.0380353" GridPlane="1" Preset="3" RenderMode="0" ShowAxes="true" ShowGrid="true" UsingLTCam="false" />
+        </ViewportConfig>
+    </EditorSession>
+    <ModelData>
+        <Entities />
+        <Mesh Filename="entities/lamp/mine_paraffin_lamp/mine_paraffin_lamp_off.dae">
+            <SubMesh Active="true" ID="0" Material="" Name="lantern" Rotation="0 0 0" Scale="1 1 1" SubMeshID="0" Tag="" WorldPos="0 0 0" />
+        </Mesh>
+        <Bones />
+        <Shapes>
+            <BodyShape Active="true" ID="7" Name="Shape_2" RelativeRotation="0 -0 0" RelativeScale="0.115365 0.0726373 0.115365" RelativeTranslation="0.00181109 -0.228899 0" Rotation="0 0 0" Scale="0.115365 0.0726373 0.115365" ShapeType="Cylinder" Tag="" WorldPos="0.000101089 -0.228899 0" />
+            <BodyShape Active="true" ID="9" Name="Shape_3" RelativeRotation="0 -0 0" RelativeScale="0.0678601 0.0726373 0.0678601" RelativeTranslation="0.00181109 0.228899 0" Rotation="0 0 0" Scale="0.0678601 0.0726373 0.0678601" ShapeType="Cylinder" Tag="" WorldPos="0.000101089 0.228899 0" />
+            <BodyShape Active="true" ID="11" Name="Shape_4" RelativeRotation="0 -0 0" RelativeScale="0.0641367 0.269185 0.0641367" RelativeTranslation="0.00181109 -0.124583 0" Rotation="0 0 0" Scale="0.0641367 0.269185 0.0641367" ShapeType="Cylinder" Tag="" WorldPos="0.000101089 -0.124583 0" />
+            <BodyShape Active="true" ID="14" Name="Shape_1" RelativeRotation="0 -0 0" RelativeScale="0.0853197 0.248188 0.0853197" RelativeTranslation="0.00181109 -0.0420016 0" Rotation="0 0 0" Scale="0.0853197 0.248188 0.0853197" ShapeType="Capsule" Tag="" WorldPos="0.000101089 -0.0420016 0" />
+            <BodyShape Active="true" ID="16" Name="Shape_5" RelativeRotation="0 -0 0" RelativeScale="0.0641367 0.269185 0.0641367" RelativeTranslation="0.00181109 0.0589904 0" Rotation="0 0 0" Scale="0.0641367 0.269185 0.0641367" ShapeType="Cylinder" Tag="" WorldPos="0.000101089 0.0589904 0" />
+            <BodyShape Active="true" ID="18" Name="Shape_6" RelativeRotation="0 -0 0" RelativeScale="0.0852426 0.0341823 0.0852426" RelativeTranslation="0.00181109 0.131322 0" Rotation="0 0 0" Scale="0.0852426 0.0341823 0.0852426" ShapeType="Cylinder" Tag="" WorldPos="0.000101089 0.131322 0" />
+            <BodyShape Active="true" ID="20" Name="Shape_7" RelativeRotation="0 -0 -0.110444" RelativeScale="0.037153 0.302972 0.0271843" RelativeTranslation="-0.114041 0.0156654 0" Rotation="0 -0 -0.110444" Scale="0.037153 0.302972 0.0271843" ShapeType="Box" Tag="" WorldPos="-0.115751 0.0156654 0" />
+            <BodyShape Active="true" ID="22" Name="Shape_8" RelativeRotation="0 -0 0.110444" RelativeScale="0.037153 0.302972 0.0271843" RelativeTranslation="0.114041 0.0156654 0" Rotation="0 -0 0.110444" Scale="0.037153 0.302972 0.0271843" ShapeType="Box" Tag="" WorldPos="0.112331 0.0156654 0" />
+            <BodyShape Active="true" ID="24" Name="Shape_9" RelativeRotation="0 -0 1.5708" RelativeScale="0.037153 0.207936 0.0271843" RelativeTranslation="-0.00112739 0.168279 0" Rotation="0 0 1.5708" Scale="0.037153 0.207936 0.0271843" ShapeType="Box" Tag="" WorldPos="-0.00283739 0.168279 0" />
+            <BodyShape Active="true" ID="26" Name="Shape_10" RelativeRotation="0 -0 1.5708" RelativeScale="0.0624755 0.271271 0.0271843" RelativeTranslation="-0.00112739 -0.148839 0" Rotation="0 0 1.5708" Scale="0.0624755 0.271271 0.0271843" ShapeType="Box" Tag="" WorldPos="-0.00283739 -0.148839 0" />
+        </Shapes>
+        <Bodies>
+            <Body Active="true" AngularDamping="0.1" BlocksSound="false" BuoyancyDensityMul="1" CanAttachCharacter="true" CollideCharacter="true" CollideNonCharacter="true" ContinuousCollision="true" HasGravity="true" ID="28" LinearDamping="0.1" Mass="2" Material="Metal" MaxAngularSpeed="4" MaxLinearSpeed="4" Name="Body_1" PushedByCharacterGravity="false" Rotation="0 0 0" Scale="1 1 1" Tag="" UseSurfaceEffects="true" Volatile="false" WorldPos="-0.00171 0 0">
+                <Children>
+                    <Child ID="0" />
+                </Children>
+                <Shape ID="26" />
+                <Shape ID="7" />
+                <Shape ID="20" />
+                <Shape ID="22" />
+                <Shape ID="24" />
+                <Shape ID="9" />
+                <Shape ID="18" />
+                <Shape ID="16" />
+                <Shape ID="14" />
+                <Shape ID="11" />
+            </Body>
+        </Bodies>
+        <Joints />
+        <Animations />
+    </ModelData>
+    <UserDefinedVariables EntitySubType="Lantern" EntityType="Item">
+        <Var Name="Health" Value="100" />
+        <Var Name="Toughness" Value="0" />
+        <Var Name="MaxFocusDistance" Value="0" />
+        <Var Name="MainPhysicsBody" Value="" />
+        <Var Name="ShowMesh" Value="true" />
+        <Var Name="DissolveOnDestruction" Value="false" />
+        <Var Name="DissolveTime" Value="1.0" />
+        <Var Name="EffectsOnSound" Value="" />
+        <Var Name="EffectsOffSound" Value="" />
+        <Var Name="EffectsOnTime" Value="1" />
+        <Var Name="EffectsOffTime" Value="1" />
+        <Var Name="EffectsOffLightColor" Value="0 0 0 0" />
+        <Var Name="EffectsOffLightRadius" Value="-1" />
+        <Var Name="ShowHints" Value="true" />
+        <Var Name="StaticMoveCheckCollision" Value="false" />
+        <Var Name="StaticMoveStartSound" Value="" />
+        <Var Name="StaticMoveStopSound" Value="" />
+        <Var Name="StaticMoveLoopSound" Value="" />
+        <Var Name="RandomizeAnimationStart" Value="true" />
+        <Var Name="SubItemTypeName" Value="Lantern" />
+        <Var Name="ImageFile" Value="C:/Steam/steamapps/common/Amnesia The Dark Descent/graphics/item/lantern_old.tga" />
+        <Var Name="PickSound" Value="Generic" />
+    </UserDefinedVariables>
+</Entity>
