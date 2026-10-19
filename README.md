@@ -11,12 +11,13 @@ Semi-recreation of early versions of Amnesia: The Dark Descent
 
 ## Guide to install:
 
-- Build the game as you would Amnesia64
-- Go to the source code folder, there should be a Release folder of sorts, maybe inside a x64 folder if built into a 64-bit executable
-- Copy the Lux.exe executable and paste it in the Amnesia directory
+- Download the source code
+- Copy the Lux.exe file into your Amnesia directory
 - Copy the game_lux folder into the Amnesia directory
-- Optionally, backup your game.cfg file on the config folder and replace it with the one on game_lux/config
 - Run the game through Lux.exe, or run the experimental game_lux total conversion through the .bat file within
+- Optionally if you're playing through Lux.exe, backup your game.cfg file on the config folder and replace it with the one on game_lux/config
+
+Note that the Lux.exe is 32 bits. Building a fresh .exe in 64 bits is just like with Amnesia64.
 
 ## Notes:
 
